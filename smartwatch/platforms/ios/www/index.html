@@ -19,7 +19,7 @@
                   <div class="mesh"></div>
                   <div class="mesh"></div>
               </div>
-              <div class="case">
+              <div class="case" id="case">
                 <div class="crown"></div>
                 <div class="power"></div>
               </div>
@@ -32,10 +32,15 @@
               </div>
             </div>
         </div>
+
+        <div id="mycircle1" class="mycircle1">
+        </div>
         
-        <script type="text/javascript" src="cordova.js"></script>
-        <script type="text/javascript" src="js/index.js"></script>
-        <script type="text/javascript">
+        <script src="cordova.js"></script>
+        <script src="http://hammerjs.github.io/dist/hammer.min.js"></script>
+        <script src="http://ftlabs.github.io/fastclick/lib/fastclick.js"></script>
+        <script src="js/index.js"></script>
+        <script>
             app.initialize();
         </script>
     </body>
