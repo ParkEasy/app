@@ -29,6 +29,9 @@
     <feature name="ApiAIPlugin">
         <param name="ios-package" value="ApiAIPlugin" />
     </feature>
+    <feature name="Geolocation">
+        <param name="ios-package" value="CDVLocation" />
+    </feature>
     <name>ParkEasy</name>
     <description>
         Hello World sample application that responds to the deviceready event.

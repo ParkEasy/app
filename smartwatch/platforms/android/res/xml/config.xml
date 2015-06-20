@@ -1,0 +1,85 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="com.parkeasy.smartwatch" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
+    <preference name="loglevel" value="DEBUG" />
+    <feature name="ApiAIPlugin">
+        <param name="android-package" value="ai.api.ApiAiPlugin" />
+    </feature>
+    <widget>
+        <feature name="ApiAIPlugin">
+            <param name="android-package" value="ai.api.ApiAiPlugin" />
+        </feature>
+    </widget>
+    <feature name="File">
+        <param name="android-package" value="org.apache.cordova.file.FileUtils" />
+        <param name="onload" value="true" />
+    </feature>
+    <feature name="Media">
+        <param name="android-package" value="org.apache.cordova.media.AudioHandler" />
+    </feature>
+    <name>ParkEasy</name>
+    <description>
+        Hello World sample application that responds to the deviceready event.
+    </description>
+    <author email="support@phonegap.com" href="http://phonegap.com">
+        PhoneGap Team
+    </author>
+    <content src="index.html" />
+    <preference name="permissions" value="none" />
+    <preference name="orientation" value="portrait" />
+    <preference name="target-device" value="universal" />
+    <preference name="fullscreen" value="true" />
+    <preference name="webviewbounce" value="false" />
+    <preference name="DisallowOverscroll" value="true" />
+    <preference name="prerendered-icon" value="true" />
+    <preference name="stay-in-webview" value="false" />
+    <preference name="ios-statusbarstyle" value="black-opaque" />
+    <preference name="detect-data-types" value="true" />
+    <preference name="exit-on-suspend" value="false" />
+    <preference name="show-splash-screen-spinner" value="true" />
+    <preference name="auto-hide-splash-screen" value="true" />
+    <preference name="disable-cursor" value="false" />
+    <preference name="android-minSdkVersion" value="7" />
+    <preference name="android-installLocation" value="auto" />
+    <gap:plugin name="org.apache.cordova.battery-status" />
+    <gap:plugin name="org.apache.cordova.camera" />
+    <gap:plugin name="org.apache.cordova.media-capture" />
+    <gap:plugin name="org.apache.cordova.console" />
+    <gap:plugin name="org.apache.cordova.contacts" />
+    <gap:plugin name="org.apache.cordova.device" />
+    <gap:plugin name="org.apache.cordova.device-motion" />
+    <gap:plugin name="org.apache.cordova.device-orientation" />
+    <gap:plugin name="org.apache.cordova.dialogs" />
+    <gap:plugin name="org.apache.cordova.file" />
+    <gap:plugin name="org.apache.cordova.file-transfer" />
+    <gap:plugin name="org.apache.cordova.geolocation" />
+    <gap:plugin name="org.apache.cordova.globalization" />
+    <gap:plugin name="org.apache.cordova.inappbrowser" />
+    <gap:plugin name="org.apache.cordova.media" />
+    <gap:plugin name="org.apache.cordova.network-information" />
+    <gap:plugin name="org.apache.cordova.splashscreen" />
+    <gap:plugin name="org.apache.cordova.vibration" />
+    <icon gap:platform="android" gap:qualifier="ldpi" src="www/res/icon/android/drawable-ldpi/ic_launcher.png" />
+    <icon gap:platform="android" gap:qualifier="mdpi" src="www/res/icon/android/drawable-mdpi/ic_launcher.png" />
+    <icon gap:platform="android" gap:qualifier="hdpi" src="www/res/icon/android/drawable-hdpi/ic_launcher.png" />
+    <icon gap:platform="android" gap:qualifier="xhdpi" src="www/res/icon/android/drawable-xhdpi/ic_launcher.png" />
+    <icon gap:platform="android" gap:qualifier="xxhdpi" src="www/res/icon/android/drawable-xxhdpi/ic_launcher.png" />
+    <icon gap:platform="android" gap:qualifier="xxxhdpi" src="www/res/icon/android/drawable-xxxhdpi/ic_launcher.png" />
+    <icon gap:platform="ios" height="29" src="www/res/icon/ios/Icon-Small.png" width="29" />
+    <icon gap:platform="ios" height="58" src="www/res/icon/ios/Icon-Small@2x.png" width="58" />
+    <icon gap:platform="ios" height="87" src="www/res/icon/ios/Icon-Small@3x.png" width="87" />
+    <icon gap:platform="ios" height="40" src="www/res/icon/ios/Icon-40.png" width="40" />
+    <icon gap:platform="ios" height="80" src="www/res/icon/ios/Icon-40@2x.png" width="80" />
+    <icon gap:platform="ios" height="120" src="www/res/icon/ios/Icon-40@3x.png" width="120" />
+    <icon gap:platform="ios" height="50" src="www/res/icon/ios/Icon-Small-50.png" width="50" />
+    <icon gap:platform="ios" height="100" src="www/res/icon/ios/Icon-Small-50@2x.png" width="100" />
+    <icon gap:platform="ios" height="60" src="www/res/icon/ios/Icon-60.png" width="60" />
+    <icon gap:platform="ios" height="120" src="www/res/icon/ios/Icon-60@2x.png" width="120" />
+    <icon gap:platform="ios" height="180" src="www/res/icon/ios/Icon-60@3x.png" width="180" />
+    <icon gap:platform="ios" height="57" src="www/res/icon/ios/Icon.png" width="57" />
+    <icon gap:platform="ios" height="114" src="www/res/icon/ios/Icon@2x.png" width="114" />
+    <icon gap:platform="ios" height="72" src="www/res/icon/ios/Icon-72.png" width="72" />
+    <icon gap:platform="ios" height="144" src="www/res/icon/ios/Icon-72@2x.png" width="144" />
+    <icon gap:platform="ios" height="76" src="www/res/icon/ios/Icon-76.png" width="76" />
+    <icon gap:platform="ios" height="152" src="www/res/icon/ios/Icon-76@2x.png" width="152" />
+    <access origin="*" />
+</widget>

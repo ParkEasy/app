@@ -43,11 +43,13 @@
 		4DFB8019534A4066B105ED0D /* CDVLocalFilesystem.m in Sources */ = {isa = PBXBuildFile; fileRef = D8A1926E6CE0472E97D3A2C5 /* CDVLocalFilesystem.m */; };
 		9955D331A7CD493AA89F0AE9 /* CDVAssetLibraryFilesystem.m in Sources */ = {isa = PBXBuildFile; fileRef = B4D27486A37D446E85FB0851 /* CDVAssetLibraryFilesystem.m */; };
 		BBD7F347A8014530BBAF7323 /* CDVSound.m in Sources */ = {isa = PBXBuildFile; fileRef = 359F007CA4F04616B768D6CF /* CDVSound.m */; };
-		B9D8B51D9AC6430AB55A952F /* ApiAIPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F19B6ACE27A4010AED1CDC7 /* ApiAIPlugin.m */; settings = {COMPILER_FLAGS = "-std=gnu99 -fmodules"; }; };
-		883A7A286BF34C178A4D4887 /* libApiAI.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 52DC5EA1B9F64BE8B423A25A /* libApiAI.a */; };
-		DB469044497D4E05AA2BB8AE /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 20966838883542D3BFEBD536 /* Security.framework */; };
-		AB4CEA7EE53C42ECA8A6BDE0 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02C501B3B4EE4BAB93921E4A /* Foundation.framework */; };
-		1ABC5FE7014F4989B19C8E41 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B2834628D884EC6B24B2A76 /* CoreAudio.framework */; };
+		E5AEEA84C1E2403C8E687992 /* ApiAIPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = 307DE06B2C344EBDA0C2D8A2 /* ApiAIPlugin.m */; settings = {COMPILER_FLAGS = "-std=gnu99 -fmodules"; }; };
+		E1991DE571E9423FA8F2599D /* libApiAI.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2FC3BEEE0869490EB937024E /* libApiAI.a */; };
+		5A3805F175AF4DF9A538CB72 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30347D90679343819881E9CA /* Security.framework */; };
+		F6DECD56E81A4EAD9E1D7B97 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E568BC0F04CD411AB6A148DD /* Foundation.framework */; };
+		E6503B39DAF547F28AF960D1 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43C22C048C9741E697794343 /* CoreAudio.framework */; };
+		8ABC6E73A55D49F38BB27BCC /* CDVLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = D4DD41FC912E49C9891B5DBE /* CDVLocation.m */; };
+		A955F7DEEA5945D982AB9716 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5FCBBA5EA2F04F718D6C1B17 /* CoreLocation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -121,18 +123,21 @@
 		8C4CC63F292441D28DCAEFDA /* CDVAssetLibraryFilesystem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CDVAssetLibraryFilesystem.h"; path = "org.apache.cordova.file/CDVAssetLibraryFilesystem.h"; sourceTree = "<group>"; fileEncoding = 4; };
 		359F007CA4F04616B768D6CF /* CDVSound.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "CDVSound.m"; path = "org.apache.cordova.media/CDVSound.m"; sourceTree = "<group>"; fileEncoding = 4; };
 		EED8A9B9A3704F958C423215 /* CDVSound.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CDVSound.h"; path = "org.apache.cordova.media/CDVSound.h"; sourceTree = "<group>"; fileEncoding = 4; };
-		8F19B6ACE27A4010AED1CDC7 /* ApiAIPlugin.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "ApiAIPlugin.m"; path = "ai.api.apiaiplugin/ApiAIPlugin.m"; sourceTree = "<group>"; fileEncoding = 4; };
-		52DC5EA1B9F64BE8B423A25A /* libApiAI.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libApiAI.a"; path = "ParkEasy/Plugins/ai.api.apiaiplugin/libApiAI.a"; sourceTree = "<group>"; fileEncoding = 4; };
-		2CEFE61AFFEE4377B2E63F26 /* ApiAI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "ApiAI.h"; path = "ai.api.apiaiplugin/ApiAI.h"; sourceTree = "<group>"; fileEncoding = 4; };
-		D6BAEE33DD9946BA9335DB89 /* AIRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "AIRequest.h"; path = "ai.api.apiaiplugin/AIRequest.h"; sourceTree = "<group>"; fileEncoding = 4; };
-		D46B281BBE2F4E8B987CE999 /* AITextRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "AITextRequest.h"; path = "ai.api.apiaiplugin/AITextRequest.h"; sourceTree = "<group>"; fileEncoding = 4; };
-		AF1B594A8513411E8D5A3D1F /* AIVoiceRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "AIVoiceRequest.h"; path = "ai.api.apiaiplugin/AIVoiceRequest.h"; sourceTree = "<group>"; fileEncoding = 4; };
-		1F31431444CA497BA789780B /* AIConfiguration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "AIConfiguration.h"; path = "ai.api.apiaiplugin/AIConfiguration.h"; sourceTree = "<group>"; fileEncoding = 4; };
-		E6DF5D34E23D4C338E4E216E /* AIDefaultConfiguration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "AIDefaultConfiguration.h"; path = "ai.api.apiaiplugin/AIDefaultConfiguration.h"; sourceTree = "<group>"; fileEncoding = 4; };
-		3524D9442B894FFEB1C7A722 /* ApiAIPlugin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "ApiAIPlugin.h"; path = "ai.api.apiaiplugin/ApiAIPlugin.h"; sourceTree = "<group>"; fileEncoding = 4; };
-		20966838883542D3BFEBD536 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "Security.framework"; path = "System/Library/Frameworks/Security.framework"; sourceTree = SDKROOT; fileEncoding = 4; };
-		02C501B3B4EE4BAB93921E4A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "Foundation.framework"; path = "System/Library/Frameworks/Foundation.framework"; sourceTree = SDKROOT; fileEncoding = 4; };
-		7B2834628D884EC6B24B2A76 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "CoreAudio.framework"; path = "System/Library/Frameworks/CoreAudio.framework"; sourceTree = SDKROOT; fileEncoding = 4; };
+		307DE06B2C344EBDA0C2D8A2 /* ApiAIPlugin.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "ApiAIPlugin.m"; path = "ai.api.apiaiplugin/ApiAIPlugin.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		2FC3BEEE0869490EB937024E /* libApiAI.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libApiAI.a"; path = "ParkEasy/Plugins/ai.api.apiaiplugin/libApiAI.a"; sourceTree = "<group>"; fileEncoding = 4; };
+		70DB84653E0244C88C0E7787 /* ApiAI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "ApiAI.h"; path = "ai.api.apiaiplugin/ApiAI.h"; sourceTree = "<group>"; fileEncoding = 4; };
+		503E85B103054342A06573EE /* AIRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "AIRequest.h"; path = "ai.api.apiaiplugin/AIRequest.h"; sourceTree = "<group>"; fileEncoding = 4; };
+		9BB2815182574EAC801DA8DE /* AITextRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "AITextRequest.h"; path = "ai.api.apiaiplugin/AITextRequest.h"; sourceTree = "<group>"; fileEncoding = 4; };
+		C30B3506291C4DB597F3986D /* AIVoiceRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "AIVoiceRequest.h"; path = "ai.api.apiaiplugin/AIVoiceRequest.h"; sourceTree = "<group>"; fileEncoding = 4; };
+		EF74F18EBE6A4380B5E25D6C /* AIConfiguration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "AIConfiguration.h"; path = "ai.api.apiaiplugin/AIConfiguration.h"; sourceTree = "<group>"; fileEncoding = 4; };
+		2E756D227D744609BD95C702 /* AIDefaultConfiguration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "AIDefaultConfiguration.h"; path = "ai.api.apiaiplugin/AIDefaultConfiguration.h"; sourceTree = "<group>"; fileEncoding = 4; };
+		D0CF17C068BC46E8A2C710DF /* ApiAIPlugin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "ApiAIPlugin.h"; path = "ai.api.apiaiplugin/ApiAIPlugin.h"; sourceTree = "<group>"; fileEncoding = 4; };
+		30347D90679343819881E9CA /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "Security.framework"; path = "System/Library/Frameworks/Security.framework"; sourceTree = SDKROOT; fileEncoding = 4; };
+		E568BC0F04CD411AB6A148DD /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "Foundation.framework"; path = "System/Library/Frameworks/Foundation.framework"; sourceTree = SDKROOT; fileEncoding = 4; };
+		43C22C048C9741E697794343 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "CoreAudio.framework"; path = "System/Library/Frameworks/CoreAudio.framework"; sourceTree = SDKROOT; fileEncoding = 4; };
+		D4DD41FC912E49C9891B5DBE /* CDVLocation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "CDVLocation.m"; path = "org.apache.cordova.geolocation/CDVLocation.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		5652D06B314849E0B607E3F1 /* CDVLocation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CDVLocation.h"; path = "org.apache.cordova.geolocation/CDVLocation.h"; sourceTree = "<group>"; fileEncoding = 4; };
+		5FCBBA5EA2F04F718D6C1B17 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "CoreLocation.framework"; path = "System/Library/Frameworks/CoreLocation.framework"; sourceTree = SDKROOT; fileEncoding = 4; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -144,10 +149,11 @@
 				301BF552109A68D80062928A /* libCordova.a in Frameworks */,
 				288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */,
 				305D5FD1115AB8F900A74A75 /* MobileCoreServices.framework in Frameworks */,
-				883A7A286BF34C178A4D4887 /* libApiAI.a in Frameworks */,
-				DB469044497D4E05AA2BB8AE /* Security.framework in Frameworks */,
-				AB4CEA7EE53C42ECA8A6BDE0 /* Foundation.framework in Frameworks */,
-				1ABC5FE7014F4989B19C8E41 /* CoreAudio.framework in Frameworks */,
+				E1991DE571E9423FA8F2599D /* libApiAI.a in Frameworks */,
+				5A3805F175AF4DF9A538CB72 /* Security.framework in Frameworks */,
+				F6DECD56E81A4EAD9E1D7B97 /* Foundation.framework in Frameworks */,
+				E6503B39DAF547F28AF960D1 /* CoreAudio.framework in Frameworks */,
+				A955F7DEEA5945D982AB9716 /* CoreLocation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -221,9 +227,12 @@
 				288765FC0DF74451002DB57D /* CoreGraphics.framework */,
 				305D5FD0115AB8F900A74A75 /* MobileCoreServices.framework */,
 				52DC5EA1B9F64BE8B423A25A /* libApiAI.a */,
-				20966838883542D3BFEBD536 /* Security.framework */,
-				02C501B3B4EE4BAB93921E4A /* Foundation.framework */,
-				7B2834628D884EC6B24B2A76 /* CoreAudio.framework */,
+				37436EEDB03F462791429C68 /* libApiAI.a */,
+				2FC3BEEE0869490EB937024E /* libApiAI.a */,
+				30347D90679343819881E9CA /* Security.framework */,
+				E568BC0F04CD411AB6A148DD /* Foundation.framework */,
+				43C22C048C9741E697794343 /* CoreAudio.framework */,
+				5FCBBA5EA2F04F718D6C1B17 /* CoreLocation.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -247,14 +256,16 @@
 				8C4CC63F292441D28DCAEFDA /* CDVAssetLibraryFilesystem.h */,
 				359F007CA4F04616B768D6CF /* CDVSound.m */,
 				EED8A9B9A3704F958C423215 /* CDVSound.h */,
-				8F19B6ACE27A4010AED1CDC7 /* ApiAIPlugin.m */,
-				2CEFE61AFFEE4377B2E63F26 /* ApiAI.h */,
-				D6BAEE33DD9946BA9335DB89 /* AIRequest.h */,
-				D46B281BBE2F4E8B987CE999 /* AITextRequest.h */,
-				AF1B594A8513411E8D5A3D1F /* AIVoiceRequest.h */,
-				1F31431444CA497BA789780B /* AIConfiguration.h */,
-				E6DF5D34E23D4C338E4E216E /* AIDefaultConfiguration.h */,
-				3524D9442B894FFEB1C7A722 /* ApiAIPlugin.h */,
+				307DE06B2C344EBDA0C2D8A2 /* ApiAIPlugin.m */,
+				70DB84653E0244C88C0E7787 /* ApiAI.h */,
+				503E85B103054342A06573EE /* AIRequest.h */,
+				9BB2815182574EAC801DA8DE /* AITextRequest.h */,
+				C30B3506291C4DB597F3986D /* AIVoiceRequest.h */,
+				EF74F18EBE6A4380B5E25D6C /* AIConfiguration.h */,
+				2E756D227D744609BD95C702 /* AIDefaultConfiguration.h */,
+				D0CF17C068BC46E8A2C710DF /* ApiAIPlugin.h */,
+				D4DD41FC912E49C9891B5DBE /* CDVLocation.m */,
+				5652D06B314849E0B607E3F1 /* CDVLocation.h */,
 			);
 			name = Plugins;
 			path = "ParkEasy/Plugins";
@@ -443,7 +454,8 @@
 				4DFB8019534A4066B105ED0D /* CDVLocalFilesystem.m in Sources */,
 				9955D331A7CD493AA89F0AE9 /* CDVAssetLibraryFilesystem.m in Sources */,
 				BBD7F347A8014530BBAF7323 /* CDVSound.m in Sources */,
-				B9D8B51D9AC6430AB55A952F /* ApiAIPlugin.m in Sources */,
+				E5AEEA84C1E2403C8E687992 /* ApiAIPlugin.m in Sources */,
+				8ABC6E73A55D49F38BB27BCC /* CDVLocation.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
