@@ -43,7 +43,7 @@
 
 - (void)init:(CDVInvokedUrlCommand*)command
 {
-    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryMultiRoute
+    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayAndRecord
                                      withOptions:AVAudioSessionCategoryOptionAllowBluetooth | AVAudioSessionCategoryOptionDefaultToSpeaker
                                            error:nil];
     [[AVAudioSession sharedInstance] setActive:YES

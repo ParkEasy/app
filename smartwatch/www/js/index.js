@@ -1,51 +1,35 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
 var app = {
 	// Application Constructor
 	initialize: function() {
 		this.bindEvents();
+		this.onDeviceReady();
 	},
 
 	// Bind Event Listeners
 	//
 	// Bind any events that are required on startup. Common events are:
-	// 'load', 'deviceready', 'offline', and 'online'.
+	// "load", "deviceready", "offline", and "online".
 	bindEvents: function() {
 		document.addEventListener("deviceready", this.onDeviceReady, false);
 		document.addEventListener("startrecording", this.recordHours, false);
 
-		var mc = new Hammer.Manager(document.getElementById("case"));
+		var that = this;
 
-		mc.add(new Hammer.Tap({
-			event: "doubletap",
-			taps: 2
-		}));
-
-		mc.on("doubletap", this.startHourInput);
+		$(".apple-watch, #map").longpress(function() {
+			// longpress callback
+			that.startHourInput();
+		});
 	},
 
 	// deviceready Event Handler
 	//
-	// The scope of 'this' is the event. In order to call the 'receivedEvent'
-	// function, we must explicitly call 'app.receivedEvent(...);'
+	// The scope of "this" is the event. In order to call the "receivedEvent"
+	// function, we must explicitly call "app.receivedEvent(...);"
 	onDeviceReady: function() {
 		FastClick.attach(document.body);
+
+		this.screen_map();
+		alert(JSON.stringify(ApiAIPlugin.init));
 
 		ApiAIPlugin.init({
 				subscriptionKey: "6914b4f2-2e33-42e5-8399-9afd80758713", // insert your subscription key here
@@ -57,12 +41,11 @@ var app = {
 				console.log(JSON.stringify(error));
 			}
 		);
+
 	},
 
 	// startHourInput Event Handler
 	startHourInput: function() {
-
-		console.log("doubletap");
 
 		// play the audio file at url
 		var question = new Media("http://translate.google.com/translate_tts?tl=de&q=Wie%20viele%20Stunden%20m%C3%B6chtest%20du%20parken?",
@@ -95,6 +78,7 @@ var app = {
 		question.play();
 	},
 
+	// RECORD HOURS
 	recordHours: function() {
 
 		// try starting a recording
@@ -182,5 +166,73 @@ var app = {
 
 				siri_off.play();
 			});
+	},
+
+	// SCREEN: MAP
+	screen_map: function() {
+		L.mapbox.accessToken = "pk.eyJ1IjoidG9tYXN6YnJ1ZSIsImEiOiJXWmNlSnJFIn0.xvLReqNnXy_wndeZ8JGOEA";
+		var map = L.mapbox.map("map", "mapbox.streets", {
+			zoomControl: false
+		}).setView([50.935029, 6.953089], 15);
+
+		var markers = {};
+		var own;
+
+		$(".leaflet-control-attribution").hide();
+		$(".mapbox-logo").hide();
+
+		var gpsInterval = window.setInterval(function() {
+
+			var lat = 50.929339;
+			var lon = 6.942946;
+			var spd = 4;
+			var hours = 2;
+
+			// load positions
+			$.get("http://parkapi.azurewebsites.net/search?lat=" + lat + "&lon=" + lon + "&speed=" + spd + "&hours=" + hours, function(data) {
+
+				var ids = [];
+				for (var d in data.parking) {
+
+					var p = data.parking[d];
+					ids.push(p.id);
+
+					if (!markers[p.id]) {
+						markers[p.id] = L.marker([p.coord[1], p.coord[0]], {
+							"icon": L.mapbox.marker.icon({
+								"marker-size": "large",
+								"marker-symbol": "parking",
+								"marker-color": "#3498db"
+							}),
+							"alt": p.name
+						}).addTo(map);
+					}
+				}
+
+				var keys = Object.keys(markers);
+				for (var m in keys) {
+					if (ids.indexOf(keys[m]) < 0) {
+						map.removeLayer(markers[keys[m]]);
+					}
+				}
+
+				// add or update own position
+				if (!own) {
+					own = L.marker([lat, lon], {
+						"icon": L.mapbox.marker.icon({
+							"marker-size": "large",
+							"marker-symbol": "car",
+							"marker-color": "#e74c3c"
+						})
+					}).addTo(map);
+
+				} else {
+					own.setLatLng([lat, lon]);
+				}
+
+				map.panTo([lat, lon]);
+			});
+
+		}, 2000);
 	}
 };
