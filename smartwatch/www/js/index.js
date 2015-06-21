@@ -1,29 +1,50 @@
-var app = {
-	// Application Constructor
-	initialize: function() {
-		this.bindEvents();
-		this.screen_map();
-	},
+document.addEventListener("deviceready", function() {
 
-	// Bind Event Listeners
-	//
-	// Bind any events that are required on startup. Common events are:
-	// "load", "deviceready", "offline", and "online".
-	bindEvents: function() {
-		document.addEventListener("deviceready", this.onDeviceReady, false);
-		document.addEventListener("startrecording", this.recordHours, false);
+	var app = angular.module("parkeasy", ["ngRoute"]).
+	config(function($routeProvider) {
+		$routeProvider.
+		when("/hours", {
+			templateUrl: "partials/hours.html"
+		}).
+		when("/map", {
+			templateUrl: "partials/map.html",
+			controller: "MapCtrl"
+		}).
+		otherwise({
+			redirectTo: "/map"
+		});
+	});
 
-		var that = this;
+	// APP CONTROLLER
+	app.controller("AppCtrl", function($scope, $location) {
+		$scope.setRoute = function(route) {
+			$location.path(route);
+		}
+
+		FastClick.attach(document.body);
+
+		ApiAIPlugin.init({
+				subscriptionKey: "6914b4f2-2e33-42e5-8399-9afd80758713", // insert your subscription key here
+				clientAccessToken: "229f0d220220457a8198feda054f7156", // insert your client access key here
+				lang: "de" // set lang tag from list of supported languages
+			},
+			function(result) {
+				console.log(JSON.stringify(error));
+			},
+			function(error) {
+				console.log(JSON.stringify(error));
+			}
+		);
 
 		$(".apple-watch, #map").longpress(function() {
 			// longpress callback
 			that.startHourInput();
 		});
-	},
+	});
 
+	// MAP CONTROLLER
+	app.controller("MapCtrl", function($scope) {
 
-	// SCREEN: MAP
-	screen_map: function() {
 		L.mapbox.accessToken = "pk.eyJ1IjoidG9tYXN6YnJ1ZSIsImEiOiJXWmNlSnJFIn0.xvLReqNnXy_wndeZ8JGOEA";
 		var map = L.mapbox.map("map", "mapbox.streets", {
 			zoomControl: false
@@ -87,8 +108,7 @@ var app = {
 
 				map.panTo([lat, lon]);
 			});
-
-		};
+		}
 
 		// onError Callback receives a PositionError object
 		function onError(error) {
@@ -100,32 +120,10 @@ var app = {
 		window.setInterval(function() {
 			navigator.geolocation.getCurrentPosition(onSuccess, onError);
 		}, 2500);
+	});
 
-	},
-
-	// deviceready Event Handler
-	//
-	// The scope of "this" is the event. In order to call the "receivedEvent"
-	// function, we must explicitly call "app.receivedEvent(...);"
-	onDeviceReady: function() {
-		FastClick.attach(document.body);
-
-		ApiAIPlugin.init({
-				subscriptionKey: "6914b4f2-2e33-42e5-8399-9afd80758713", // insert your subscription key here
-				clientAccessToken: "229f0d220220457a8198feda054f7156", // insert your client access key here
-				lang: "de" // set lang tag from list of supported languages
-			},
-			function(result) {
-				console.log(JSON.stringify(error));
-			},
-			function(error) {
-				console.log(JSON.stringify(error));
-			}
-		);
-	},
-
-	// startHourInput Event Handler
-	startHourInput: function() {
+	// HOURS CONTROLLER 
+	app.controller("HoursCtrl", function($scope) {
 
 		// play the audio file at url
 		var question = new Media("http://translate.google.com/translate_tts?tl=de&q=Wie%20viele%20Stunden%20m%C3%B6chtest%20du%20parken?",
@@ -139,8 +137,98 @@ var app = {
 
 						siri_on.release();
 
-						var e = new CustomEvent("startrecording");
-						document.dispatchEvent(e);
+						// try starting a recording
+						ApiAIPlugin.levelMeterCallback(function(level) {
+
+							var circle1 = document.getElementById("mycircle1");
+
+							transform = "scale3d(" + (level + 1.0) + ", " + (level + 1.0) + ", " + (level + 1.0) + ")";
+							circle1.style.transform = transform;
+							circle1.style.webkitTransform = transform;
+
+							console.log(transform);
+						});
+
+						ApiAIPlugin.setListeningStartCallback(function() {
+							console.log("listen start");
+						});
+
+						ApiAIPlugin.setListeningFinishCallback(function() {
+							console.log("listen stop");
+						});
+
+						ApiAIPlugin.requestVoice({}, // empty for simple requests, some optional parameters can be here
+							function(response) {
+
+								console.log(response.result);
+
+								if (!response.result.parameters) {
+									var sorry = ["Tut mir Leid", "Sorry", "Oh weh", "Oh nein", "Entschuldige", "Mein Fehler", "Ups"];
+									var greeting = sorry[Math.floor(Math.random() * sorry.length)];
+									var siri_off = new Media("http://translate.google.com/translate_tts?tl=de&q=" + encodeURIComponent(greeting) + ".%20Das%20habe%20ich%20nicht%20verstanden.", function() {
+										siri_off.release();
+									}, function(err) {
+										console.error(err);
+									});
+
+									siri_off.play();
+
+								} else {
+
+									// place your result processing here
+									var std = response.result.parameters.Stunden;
+									var min = response.result.parameters.Minuten;
+
+									var value = "";
+									var hours = 0.0;
+
+									// check if it was stunden or minuten
+									if (std != "") {
+										var hour = hours = parseInt(std);
+										if (hour == 1) {
+											value = hour + " Stunde";
+										} else {
+											value = hour + " Stunden";
+										}
+									} else if (min != "") {
+										var minute = parseInt(min);
+										hours = minute / 60.0;
+										value = minute + " Minuten";
+									}
+
+									window.hours = hours;
+
+									var okays = ["Alles klar", "In Ordnung", "Geht klar", "Okay", "Super", "OK"];
+									var greeting = okays[Math.floor(Math.random() * okays.length)];
+									var url = "http://translate.google.com/translate_tts?ie=UTF-8&q=" + encodeURIComponent(greeting) + "." + encodeURIComponent(value) + ".&tl=de-DE";
+
+									var confirmation = new Media(url, function() {
+										confirmation.release();
+									}, function(err) {
+										console.error(err);
+									});
+
+									confirmation.play();
+								}
+							},
+							function(error) {
+
+								ApiAIPlugin.cancelAllRequests();
+								console.log(error);
+
+								// http://translate.google.com/translate_tts?tl=de&q=Tut%20mir%20Leid,%20das%20habe%20ich%20nicht%20verstanden.
+
+								// place your error processing here
+								var sorry = ["Tut mir Leid", "Oh nein", "Entschuldige", "Mein Fehler", "Ups"];
+								var greeting = sorry[Math.floor(Math.random() * sorry.length)];
+								var siri_off = new Media("http://translate.google.com/translate_tts?tl=de&q=" + encodeURIComponent(greeting) + ".%20Das%20habe%20ich%20nicht%20verstanden.", function() {
+									siri_off.release();
+								}, function(err) {
+									console.error(err);
+								});
+
+								siri_off.play();
+							});
 					},
 					function(err) {
 						console.error(err);
@@ -156,102 +244,7 @@ var app = {
 
 		// play audio
 		question.play();
-	},
 
-	// RECORD HOURS
-	recordHours: function() {
+	});
 
-		// try starting a recording
-		ApiAIPlugin.levelMeterCallback(function(level) {
-
-			var circle1 = document.getElementById("mycircle1");
-
-			transform = "scale3d(" + (level + 1.0) + ", " + (level + 1.0) + ", " + (level + 1.0) + ")";
-			circle1.style.transform = transform;
-			circle1.style.webkitTransform = transform;
-
-			console.log(transform);
-		});
-
-		ApiAIPlugin.setListeningStartCallback(function() {
-			console.log("listen start");
-		});
-
-		ApiAIPlugin.setListeningFinishCallback(function() {
-			console.log("listen stop");
-		});
-
-		ApiAIPlugin.requestVoice({}, // empty for simple requests, some optional parameters can be here
-			function(response) {
-
-				console.log(response.result);
-
-				if (!response.result.parameters) {
-					var sorry = ["Tut mir Leid", "Sorry", "Oh weh", "Oh nein", "Entschuldige", "Mein Fehler", "Ups"];
-					var greeting = sorry[Math.floor(Math.random() * sorry.length)];
-					var siri_off = new Media("http://translate.google.com/translate_tts?tl=de&q=" + encodeURIComponent(greeting) + ".%20Das%20habe%20ich%20nicht%20verstanden.", function() {
-						siri_off.release();
-					}, function(err) {
-						console.error(err);
-					});
-
-					siri_off.play();
-
-				} else {
-
-					// place your result processing here
-					var std = response.result.parameters.Stunden;
-					var min = response.result.parameters.Minuten;
-
-					var value = "";
-					var hours = 0.0;
-
-					// check if it was stunden or minuten
-					if (std != "") {
-						var hour = hours = parseInt(std);
-						if (hour == 1) {
-							value = hour + " Stunde";
-						} else {
-							value = hour + " Stunden";
-						}
-					} else if (min != "") {
-						var minute = parseInt(min);
-						hours = minute / 60.0;
-						value = minute + " Minuten";
-					}
-
-					window.hours = hours;
-
-					var okays = ["Alles klar", "In Ordnung", "Geht klar", "Okay", "Super", "OK"];
-					var greeting = okays[Math.floor(Math.random() * okays.length)];
-					var url = "http://translate.google.com/translate_tts?ie=UTF-8&q=" + encodeURIComponent(greeting) + "." + encodeURIComponent(value) + ".&tl=de-DE";
-
-					var confirmation = new Media(url, function() {
-						confirmation.release();
-					}, function(err) {
-						console.error(err);
-					});
-
-					confirmation.play();
-				}
-			},
-			function(error) {
-
-				ApiAIPlugin.cancelAllRequests();
-				console.log(error);
-
-				// http://translate.google.com/translate_tts?tl=de&q=Tut%20mir%20Leid,%20das%20habe%20ich%20nicht%20verstanden.
-
-				// place your error processing here
-				var sorry = ["Tut mir Leid", "Oh nein", "Entschuldige", "Mein Fehler", "Ups"];
-				var greeting = sorry[Math.floor(Math.random() * sorry.length)];
-				var siri_off = new Media("http://translate.google.com/translate_tts?tl=de&q=" + encodeURIComponent(greeting) + ".%20Das%20habe%20ich%20nicht%20verstanden.", function() {
-					siri_off.release();
-				}, function(err) {
-					console.error(err);
-				});
-
-				siri_off.play();
-			});
-	}
-};
+}, false);
