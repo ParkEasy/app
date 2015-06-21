@@ -135,7 +135,9 @@ app.controller("MapCtrl", function($scope, $cordovaGeolocation, $location) {
 	// on longpress -> go to hours input
 	$(".apple-watch, #map").longpress(function() {
 		// longpress callback
-		$location.path("hours");
+		$scope.$apply(function() {
+			$location.path("hours");
+		});
 	});
 
 	// DESTROY event for controller
@@ -146,8 +148,6 @@ app.controller("MapCtrl", function($scope, $cordovaGeolocation, $location) {
 
 // HOURS CONTROLLER 
 app.controller("HoursCtrl", function($scope, $location) {
-
-	console.log($location);
 
 	document.addEventListener("deviceready", function() {
 
@@ -186,21 +186,24 @@ app.controller("HoursCtrl", function($scope, $location) {
 						ApiAIPlugin.requestVoice({}, // empty for simple requests, some optional parameters can be here
 							function(response) {
 
-								console.log(response.result);
-
 								if (!response.result.parameters) {
 									var sorry = ["Tut mir Leid", "Sorry", "Oh weh", "Oh nein", "Entschuldige", "Mein Fehler", "Ups"];
 									var greeting = sorry[Math.floor(Math.random() * sorry.length)];
 									var siri_off = new Media("http://translate.google.com/translate_tts?tl=de&q=" + encodeURIComponent(greeting) + ".%20Das%20habe%20ich%20nicht%20verstanden.", function() {
 										siri_off.release();
 
-										console.log($location);
-
 										// go back to map
-										$location.path("map");
+										$scope.$apply(function() {
+											$location.path("map");
+										});
 
 									}, function(err) {
 										console.error(err);
+
+										// go back to map
+										$scope.$apply(function() {
+											$location.path("map");
+										});
 									});
 
 									siri_off.play();
@@ -235,15 +238,21 @@ app.controller("HoursCtrl", function($scope, $location) {
 									var url = "http://translate.google.com/translate_tts?ie=UTF-8&q=" + encodeURIComponent(greeting) + "." + encodeURIComponent(value) + ".&tl=de-DE";
 
 									var confirmation = new Media(url, function() {
+
 										confirmation.release();
 
-										console.log($location);
-
 										// go back to map
-										$location.path("map");
+										$scope.$apply(function() {
+											$location.path("map");
+										});
 
 									}, function(err) {
 										console.error(err);
+
+										// go back to map
+										$scope.$apply(function() {
+											$location.path("map");
+										});
 									});
 
 									confirmation.play();
@@ -260,13 +269,18 @@ app.controller("HoursCtrl", function($scope, $location) {
 								var siri_off = new Media("http://translate.google.com/translate_tts?tl=de&q=" + encodeURIComponent(greeting) + ".%20Das%20habe%20ich%20nicht%20verstanden.", function() {
 									siri_off.release();
 
-									console.log($location);
-
 									// go back to map
-									$location.path("map");
+									$scope.$apply(function() {
+										$location.path("map");
+									});
 
 								}, function(err) {
 									console.error(err);
+
+									// go back to map
+									$scope.$apply(function() {
+										$location.path("map");
+									});
 								});
 
 								siri_off.play();
@@ -275,10 +289,10 @@ app.controller("HoursCtrl", function($scope, $location) {
 					function(err) {
 						console.error(err);
 
-						console.log($location);
-
 						// go back to map
-						$location.path("map");
+						$scope.$apply(function() {
+							$location.path("map");
+						});
 					});
 
 				siri_on.play();
@@ -286,10 +300,10 @@ app.controller("HoursCtrl", function($scope, $location) {
 
 			function(err) {
 
-				console.log($location);
-
 				// go back to map
-				$location.path("map");
+				$scope.$apply(function() {
+					$location.path("map");
+				});
 
 				console.log("playAudio():Audio Error: " + err);
 			}
