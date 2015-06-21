@@ -32,6 +32,7 @@
 /Volumes/Macintosh/Users/thomasbruggemann/Sites/ParkEasy/app/smartwatch/platforms/android/assets/www/img \
 /Volumes/Macintosh/Users/thomasbruggemann/Sites/ParkEasy/app/smartwatch/platforms/android/assets/www/index.html \
 /Volumes/Macintosh/Users/thomasbruggemann/Sites/ParkEasy/app/smartwatch/platforms/android/assets/www/js \
+/Volumes/Macintosh/Users/thomasbruggemann/Sites/ParkEasy/app/smartwatch/platforms/android/assets/www/partials \
 /Volumes/Macintosh/Users/thomasbruggemann/Sites/ParkEasy/app/smartwatch/platforms/android/assets/www/plugins \
 /Volumes/Macintosh/Users/thomasbruggemann/Sites/ParkEasy/app/smartwatch/platforms/android/assets/www/res \
 /Volumes/Macintosh/Users/thomasbruggemann/Sites/ParkEasy/app/smartwatch/platforms/android/assets/www/sounds \
@@ -41,6 +42,9 @@
 /Volumes/Macintosh/Users/thomasbruggemann/Sites/ParkEasy/app/smartwatch/platforms/android/assets/www/img/logo.png \
 /Volumes/Macintosh/Users/thomasbruggemann/Sites/ParkEasy/app/smartwatch/platforms/android/assets/www/js/index.js \
 /Volumes/Macintosh/Users/thomasbruggemann/Sites/ParkEasy/app/smartwatch/platforms/android/assets/www/js/jquery.longpress.js \
+/Volumes/Macintosh/Users/thomasbruggemann/Sites/ParkEasy/app/smartwatch/platforms/android/assets/www/js/ng-cordova.min.js \
+/Volumes/Macintosh/Users/thomasbruggemann/Sites/ParkEasy/app/smartwatch/platforms/android/assets/www/partials/hours.html \
+/Volumes/Macintosh/Users/thomasbruggemann/Sites/ParkEasy/app/smartwatch/platforms/android/assets/www/partials/map.html \
 /Volumes/Macintosh/Users/thomasbruggemann/Sites/ParkEasy/app/smartwatch/platforms/android/assets/www/plugins/ai.api.apiaiplugin \
 /Volumes/Macintosh/Users/thomasbruggemann/Sites/ParkEasy/app/smartwatch/platforms/android/assets/www/plugins/org.apache.cordova.file \
 /Volumes/Macintosh/Users/thomasbruggemann/Sites/ParkEasy/app/smartwatch/platforms/android/assets/www/plugins/org.apache.cordova.media \
