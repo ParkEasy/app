@@ -41,7 +41,7 @@ app.controller("AppCtrl", function($scope, $location) {
 });
 
 // MAP CONTROLLER
-app.controller("MapCtrl", function($scope, $cordovaGeolocation, $location) {
+app.controller("MapCtrl", function($scope, $cordovaGeolocation, $location, $rootScope) {
 
 	L.mapbox.accessToken = "pk.eyJ1IjoidG9tYXN6YnJ1ZSIsImEiOiJXWmNlSnJFIn0.xvLReqNnXy_wndeZ8JGOEA";
 	var map = L.mapbox.map("map", "mapbox.streets", {
@@ -50,6 +50,18 @@ app.controller("MapCtrl", function($scope, $cordovaGeolocation, $location) {
 
 	var markers = {};
 	var own;
+
+	map.on("dragstart", function() {
+		window.pauseFit = true;
+	});
+
+	map.on("dragend", function() {
+		window.draged = false;
+
+		window.setTimeout(function() {
+			window.pauseFit = false;
+		}, 10000);
+	});
 
 	$(".leaflet-control-attribution").hide();
 	$(".mapbox-logo").hide();
@@ -60,7 +72,7 @@ app.controller("MapCtrl", function($scope, $cordovaGeolocation, $location) {
 		var lat = position.coords.latitude;
 		var lon = position.coords.longitude;
 		var spd = Math.max(0, position.coords.speed);
-		var hours = window.hours || 1;
+		var hours = $rootScope.hours || 1;
 
 		// load positions
 		$.get("http://parkapi.azurewebsites.net/search?lat=" + lat + "&lon=" + lon + "&speed=" + spd + "&hours=" + hours, function(data) {
@@ -79,7 +91,12 @@ app.controller("MapCtrl", function($scope, $cordovaGeolocation, $location) {
 							"marker-color": "#3498db"
 						}),
 						"alt": p.name
-					}).addTo(map);
+					})
+						.bindLabel(p.price + "€", {
+							noHide: true,
+							direction: "auto"
+						})
+						.addTo(map);
 				}
 			}
 
@@ -104,7 +121,18 @@ app.controller("MapCtrl", function($scope, $cordovaGeolocation, $location) {
 				own.setLatLng([lat, lon]);
 			}
 
-			map.panTo([lat, lon]);
+			if (!window.pauseFit) {
+				// create list of markers
+				var m = [own];
+				for (var i in markers) {
+					m.push(markers[i]);
+				}
+				var group = new L.featureGroup(m);
+
+				map.fitBounds(group.getBounds(), {
+					padding: [20, 20]
+				});
+			}
 		});
 	}
 
@@ -116,8 +144,6 @@ app.controller("MapCtrl", function($scope, $cordovaGeolocation, $location) {
 	var watch;
 
 	document.addEventListener("deviceready", function() {
-
-		console.log("ready");
 
 		// call gps position every 2.5 seconds
 		watch = window.setInterval(function() {
@@ -138,6 +164,8 @@ app.controller("MapCtrl", function($scope, $cordovaGeolocation, $location) {
 		$scope.$apply(function() {
 			$location.path("hours");
 		});
+	}, {
+		duration: 1500
 	});
 
 	// DESTROY event for controller
@@ -147,7 +175,9 @@ app.controller("MapCtrl", function($scope, $cordovaGeolocation, $location) {
 });
 
 // HOURS CONTROLLER 
-app.controller("HoursCtrl", function($scope, $location) {
+app.controller("HoursCtrl", function($scope, $location, $rootScope) {
+
+	$rootScope.hours = $rootScope.hours || 1;
 
 	document.addEventListener("deviceready", function() {
 
@@ -166,11 +196,11 @@ app.controller("HoursCtrl", function($scope, $location) {
 						// try starting a recording
 						ApiAIPlugin.levelMeterCallback(function(level) {
 
-							var circle1 = document.getElementById("mycircle1");
+							var circle = document.getElementById("circle");
 
 							transform = "scale3d(" + (level + 1.0) + ", " + (level + 1.0) + ", " + (level + 1.0) + ")";
-							circle1.style.transform = transform;
-							circle1.style.webkitTransform = transform;
+							circle.style.transform = transform;
+							circle.style.webkitTransform = transform;
 
 							console.log(transform);
 						});
@@ -231,7 +261,7 @@ app.controller("HoursCtrl", function($scope, $location) {
 										value = minute + " Minuten";
 									}
 
-									window.hours = hours;
+									$rootScope.hours = hours;
 
 									var okays = ["Alles klar", "In Ordnung", "Geht klar", "Okay", "Super", "OK"];
 									var greeting = okays[Math.floor(Math.random() * okays.length)];

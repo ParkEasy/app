@@ -14,11 +14,11 @@
 		<string>https://github.com/ParkEasy/app.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>smartwatch/platforms/ios/ParkEasy.xcodeproj</string>
+	<string>platforms/ios/ParkEasy.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>01120E1519D11E51FD16509A92FEF1969AE2216F</key>
-		<string>../../../../..</string>
+		<string>../../../..</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
 	<string>https://github.com/ParkEasy/app.git</string>
