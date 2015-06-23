@@ -65,12 +65,16 @@ body {
     width: 0;
     height: 0;
     border-style: solid;
-    border-width: 0 100px 100px 100px;
+    border-width: 0 50px 100px 50px;
     border-color: transparent transparent white transparent;
-    transform: rotate(93deg);
+    left: 50%;
+    position:absolute;
+    top:50%;
+    margin-left:-50px;
+    margin-top:-50px;
 }
 
-.hours {
+.topinfo {
     text-align: center;
-    margin-top:10px;
+    margin-top:14px;
 }

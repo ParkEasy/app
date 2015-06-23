@@ -9,6 +9,14 @@ config(function($routeProvider) {
 		templateUrl: "partials/map.html",
 		controller: "MapCtrl"
 	}).
+	when("/navi", {
+		templateUrl: "partials/navi.html",
+		controller: "NaviCtrl"
+	}).
+	when("/parked", {
+		templateUrl: "partials/parked.html",
+		controller: "ParkedCtrl"
+	}).
 	otherwise({
 		redirectTo: "/map"
 	});
@@ -41,7 +49,7 @@ app.controller("AppCtrl", function($scope, $location) {
 });
 
 // MAP CONTROLLER
-app.controller("MapCtrl", function($scope, $cordovaGeolocation, $location, $rootScope) {
+app.controller("MapCtrl", function($scope, $cordovaGeolocation, $location) {
 
 	L.mapbox.accessToken = "pk.eyJ1IjoidG9tYXN6YnJ1ZSIsImEiOiJXWmNlSnJFIn0.xvLReqNnXy_wndeZ8JGOEA";
 	var map = L.mapbox.map("map", "mapbox.streets", {
@@ -51,18 +59,26 @@ app.controller("MapCtrl", function($scope, $cordovaGeolocation, $location, $root
 	var markers = {};
 	var own;
 
+	// on longpress -> go to hours input
+	$("#map").longpress(function() {
+		// longpress callback
+		$scope.$apply(function() {
+			$location.path("hours");
+		});
+
+	}, {
+		duration: 2000
+	});
+
 	map.on("dragstart", function() {
 		window.pauseFit = true;
-		window.draged = true;
 	});
 
 	map.on("dragend", function() {
 		window.draged = false;
 
 		window.setTimeout(function() {
-			if (window.draged == false) {
-				window.pauseFit = false;
-			}
+			window.pauseFit = false;
 		}, 10000);
 	});
 
@@ -75,7 +91,7 @@ app.controller("MapCtrl", function($scope, $cordovaGeolocation, $location, $root
 		var lat = position.coords.latitude;
 		var lon = position.coords.longitude;
 		var spd = Math.max(0, position.coords.speed);
-		var hours = $rootScope.hours || 1;
+		var hours = window.hours || 1;
 
 		// load positions
 		$.get("http://parkapi.azurewebsites.net/search?lat=" + lat + "&lon=" + lon + "&speed=" + spd + "&hours=" + hours, function(data) {
@@ -93,11 +109,17 @@ app.controller("MapCtrl", function($scope, $cordovaGeolocation, $location, $root
 							"marker-symbol": "parking",
 							"marker-color": "#3498db"
 						}),
-						"alt": p.name
+						"alt": p.id
 					})
 						.bindLabel(p.price + "€", {
 							noHide: true,
 							direction: "auto"
+						})
+						.on("click", function(e) {
+							window.detail = e.target.options.alt;
+							$scope.$apply(function() {
+								$location.path("navi");
+							});
 						})
 						.addTo(map);
 				}
@@ -139,36 +161,28 @@ app.controller("MapCtrl", function($scope, $cordovaGeolocation, $location, $root
 		});
 	}
 
-	// onError Callback receives a PositionError object
-	function onError(error) {
-		console.log(error);
-	}
-
 	var watch;
 
 	document.addEventListener("deviceready", function() {
 
-		// call gps position every 2.5 seconds
+		$cordovaGeolocation
+			.getCurrentPosition({
+				timeout: 30000,
+				enableHighAccuracy: true
+			})
+			.then(onSuccess);
+
+		// call gps position every 2 seconds
 		watch = window.setInterval(function() {
 
 			$cordovaGeolocation
 				.getCurrentPosition({
 					timeout: 30000,
-					enableHighAccuracy: false
+					enableHighAccuracy: true
 				})
-				.then(onSuccess, onError);
+				.then(onSuccess);
 
-		}, 2500);
-	});
-
-	// on longpress -> go to hours input
-	$(".apple-watch, #map").longpress(function() {
-		// longpress callback
-		$scope.$apply(function() {
-			$location.path("hours");
-		});
-	}, {
-		duration: 1500
+		}, 2000);
 	});
 
 	// DESTROY event for controller
@@ -178,9 +192,19 @@ app.controller("MapCtrl", function($scope, $cordovaGeolocation, $location, $root
 });
 
 // HOURS CONTROLLER 
-app.controller("HoursCtrl", function($scope, $location, $rootScope) {
+app.controller("HoursCtrl", function($scope, $location) {
 
-	$rootScope.hours = $rootScope.hours || 1;
+	window.hours = window.hours || 1;
+	$scope.hours = window.hours;
+
+	$(".apple-watch").swipe({
+		swipeRight: function(event, direction, distance, duration, fingerCount) {
+			//This only fires when the user swipes left
+			$scope.$apply(function() {
+				$location.path("map");
+			});
+		}
+	});
 
 	document.addEventListener("deviceready", function() {
 
@@ -264,7 +288,8 @@ app.controller("HoursCtrl", function($scope, $location, $rootScope) {
 										value = minute + " Minuten";
 									}
 
-									$rootScope.hours = hours;
+									window.hours = hours;
+									$scope.hours = hours;
 
 									var okays = ["Alles klar", "In Ordnung", "Geht klar", "Okay", "Super", "OK"];
 									var greeting = okays[Math.floor(Math.random() * okays.length)];
@@ -346,4 +371,93 @@ app.controller("HoursCtrl", function($scope, $location, $rootScope) {
 		question.play();
 
 	}, false);
+
+	// DESTROY event for controller
+	$scope.$on("$destroy", function() {
+		ApiAIPlugin.cancelAllRequests();
+	});
+});
+
+// NAVI CONTROLLER
+app.controller("NaviCtrl", function($scope, $cordovaGeolocation, $location) {
+
+	var watch;
+
+	// get detail info by id
+	$.getJSON("http://parkapi.azurewebsites.net/detail?id=" + window.detail, function(parking) {
+
+		// find out streetname
+		$.getJSON("http://router.project-osrm.org/nearest?loc=" + parking.Coordinates[1] + "," + parking.Coordinates[0], function(location) {
+			$scope.street = location.name || "";
+		});
+
+
+		// GPS success callback
+		function onSuccess(position) {
+
+			var Parkhaus = {
+				x: parking.Coordinates[0],
+				y: parking.Coordinates[1]
+			};
+
+			var Standort = {
+				x: position.coords.longitude,
+				y: position.coords.latitude
+			};
+
+			var deltaX = Parkhaus.x - Standort.x;
+			var deltaY = Parkhaus.y - Standort.y;
+			var rad = Math.atan2(deltaY, deltaX);
+
+			var winkel = rad * (180 / Math.PI) % 360;
+
+			document.getElementById("arrow").style.transform = "rotate(" + winkel + "deg)";
+
+			var distsquare = deltaX * deltaX + deltaY * deltaY;
+			var dist = Math.sqrt(distsquare) * 63781.37;
+
+			$scope.distance = "(" + parseInt(dist) + "m)";
+		}
+
+		document.addEventListener("deviceready", function() {
+
+			$cordovaGeolocation
+				.getCurrentPosition({
+					timeout: 30000,
+					enableHighAccuracy: true
+				})
+				.then(onSuccess);
+
+			// call gps position every 2 seconds
+			watch = window.setInterval(function() {
+
+				$cordovaGeolocation
+					.getCurrentPosition({
+						timeout: 30000,
+						enableHighAccuracy: true
+					})
+					.then(onSuccess);
+
+			}, 2000);
+		});
+	});
+
+	$(".apple-watch").swipe({
+		swipeRight: function(event, direction, distance, duration, fingerCount) {
+			//This only fires when the user swipes left
+			$scope.$apply(function() {
+				$location.path("map");
+			});
+		}
+	});
+
+	// DESTROY event for controller
+	$scope.$on("$destroy", function() {
+		window.clearInterval(watch);
+	});
+});
+
+// PARKED CONTROLLER
+app.controller("ParkedCtrl", function($scope) {
+
 });
