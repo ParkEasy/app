@@ -9,6 +9,14 @@ config(function($routeProvider) {
 		templateUrl: "partials/map.html",
 		controller: "MapCtrl"
 	}).
+	when("/navi", {
+		templateUrl: "partials/navi.html",
+		controller: "NaviCtrl"
+	}).
+	when("/parked", {
+		templateUrl: "partials/parked.html",
+		controller: "ParkedCtrl"
+	}).
 	otherwise({
 		redirectTo: "/map"
 	});
@@ -136,26 +144,28 @@ app.controller("MapCtrl", function($scope, $cordovaGeolocation, $location, $root
 		});
 	}
 
-	// onError Callback receives a PositionError object
-	function onError(error) {
-		console.log(error);
-	}
-
 	var watch;
 
 	document.addEventListener("deviceready", function() {
 
-		// call gps position every 2.5 seconds
+		$cordovaGeolocation
+			.getCurrentPosition({
+				timeout: 30000,
+				enableHighAccuracy: true
+			})
+			.then(onSuccess);
+
+		// call gps position every 2 seconds
 		watch = window.setInterval(function() {
 
 			$cordovaGeolocation
 				.getCurrentPosition({
 					timeout: 30000,
-					enableHighAccuracy: false
+					enableHighAccuracy: true
 				})
-				.then(onSuccess, onError);
+				.then(onSuccess);
 
-		}, 2500);
+		}, 2000);
 	});
 
 	// on longpress -> go to hours input
@@ -164,6 +174,7 @@ app.controller("MapCtrl", function($scope, $cordovaGeolocation, $location, $root
 		$scope.$apply(function() {
 			$location.path("hours");
 		});
+
 	}, {
 		duration: 1500
 	});
@@ -343,4 +354,67 @@ app.controller("HoursCtrl", function($scope, $location, $rootScope) {
 		question.play();
 
 	}, false);
+});
+
+// NAVI CONTROLLER
+app.controller("NaviCtrl", function($scope, $cordovaGeolocation) {
+
+	var watch;
+
+	// GPS success callback
+	function onSuccess(position) {
+
+		var Parkhaus = {
+			x: 6.940711,
+			y: 50.930993
+		};
+
+		var Standort = {
+			x: position.coords.longitude,
+			y: position.coords.latitude
+		};
+
+		var deltaX = Parkhaus.x - Standort.x;
+		var deltaY = Parkhaus.y - Standort.y;
+		var rad = Math.atan2(deltaY, deltaX);
+
+		var winkel = rad * (180 / Math.PI) % 360;
+
+		document.getElementById("arrow").style.transform = "rotate(" + winkel + "deg)";
+
+		var distsquare = deltaX * deltaX + deltaY * deltaY;
+		var dist = Math.sqrt(distsquare) * 63781.37;
+	}
+
+	document.addEventListener("deviceready", function() {
+
+		$cordovaGeolocation
+			.getCurrentPosition({
+				timeout: 30000,
+				enableHighAccuracy: true
+			})
+			.then(onSuccess);
+
+		// call gps position every 2 seconds
+		watch = window.setInterval(function() {
+
+			$cordovaGeolocation
+				.getCurrentPosition({
+					timeout: 30000,
+					enableHighAccuracy: true
+				})
+				.then(onSuccess);
+
+		}, 2000);
+	});
+
+	// DESTROY event for controller
+	$scope.$on("$destroy", function() {
+		window.clearInterval(watch);
+	});
+});
+
+// PARKED CONTROLLER
+app.controller("ParkedCtrl", function($scope) {
+
 });
