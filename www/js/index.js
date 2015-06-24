@@ -67,9 +67,7 @@ app.controller("MapCtrl", function($scope, $cordovaGeolocation, $location) {
 			$location.path("hours");
 		});
 
-	}, {
-		duration: 2000
-	});
+	}, 2000);
 
 	map.on("dragstart", function() {
 		window.pauseFit = true;
@@ -118,9 +116,9 @@ app.controller("MapCtrl", function($scope, $cordovaGeolocation, $location) {
 						})
 						.on("click", function(e) {
 							window.detail = e.target.options.alt;
-							$scope.$apply(function() {
-								$location.path("navi");
-							});
+							$location.path("navi");
+							$location.replace();
+
 						})
 						.addTo(map);
 				}
@@ -444,38 +442,46 @@ app.controller("NaviCtrl", function($scope, $cordovaGeolocation, $location, $cor
 
 			// watch device orientation
 			watchCompass = $cordovaDeviceOrientation.watchHeading({
-				frequency: 1000,
+				frequency: 2500,
 				filter: true
 			}).then(
 				null,
 				function(error) {},
 				function(result) {
 
-					console.log(result);
-
-					var magneticHeading = result.magneticHeading;
-					var trueHeading = result.trueHeading;
+					var heading = result.magneticHeading || result.trueHeading;
 
 					if (window.position) {
-						var Parkhaus = {
-							x: parking.Coordinates[0],
-							y: parking.Coordinates[1]
+
+						var point1 = {
+							"type": "Feature",
+							"properties": {},
+							"geometry": {
+								"type": "Point",
+								"coordinates": [window.position.coords.longitude, window.position.coords.latitude]
+							}
 						};
 
-						var Standort = {
-							x: window.position.coords.longitude,
-							y: window.position.coords.latitude
+						var point2 = {
+							"type": "Feature",
+							"properties": {},
+							"geometry": {
+								"type": "Point",
+								"coordinates": [parking.Coordinates[0], parking.Coordinates[1]]
+							}
 						};
 
-						var deltaX = Parkhaus.x - Standort.x;
-						var deltaY = Parkhaus.y - Standort.y;
-						var rad = Math.atan2(deltaY, deltaX);
+						var winkel = turf.bearing(point1, point2) % 360;
+						var bearing = (winkel - heading) % 360;
 
-						var winkel = rad * (180 / Math.PI) % 360;
+						console.log(heading, winkel, bearing);
 
-						var bearing = winkel - magneticHeading % 360;
+						var arr = document.getElementById("arrow");
+						if (arr) {
 
-						document.getElementById("arrow").style.transform = "rotate(" + bearing + "deg)";
+							arr.style.transform = "rotate(" + bearing + "deg)";
+							arr.style.webkitTransform = "rotate(" + bearing + "deg)";
+						}
 					}
 				});
 		});
@@ -483,18 +489,26 @@ app.controller("NaviCtrl", function($scope, $cordovaGeolocation, $location, $cor
 
 	$(".apple-watch").swipe({
 		swipeRight: function(event, direction, distance, duration, fingerCount) {
+			console.log("swap");
 
-			// this only fires when the user swipes left
-			$scope.$apply(function() {
-				$location.path("map");
-			});
+			console.log($scope, $scope.$apply);
+
+			// this only fires when the user swipes left+
+
+			window.clearInterval(watchGPS);
+			window.clearInterval(watchCompass);
+			$cordovaDeviceOrientation.clearWatch(watchCompass);
+
+			console.log($location);
+			$location.path("map");
+			$location.replace();
 		}
 	});
 
 	// DESTROY event for controller
 	$scope.$on("$destroy", function() {
 		window.clearInterval(watchGPS);
-		watchCompass.clearWatch();
+		$cordovaDeviceOrientation.clearWatch(watchCompass);
 	});
 });
 

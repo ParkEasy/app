@@ -1,52 +1,10 @@
 cordova.define('cordova/plugin_list', function(require, exports, module) {
 module.exports = [
     {
-        "file": "plugins/org.apache.cordova.media/www/MediaError.js",
-        "id": "org.apache.cordova.media.MediaError",
-        "clobbers": [
-            "window.MediaError"
-        ]
-    },
-    {
-        "file": "plugins/org.apache.cordova.media/www/Media.js",
-        "id": "org.apache.cordova.media.Media",
-        "clobbers": [
-            "window.Media"
-        ]
-    },
-    {
         "file": "plugins/ai.api.apiaiplugin/www/ApiAIPlugin.js",
         "id": "ai.api.apiaiplugin.ApiAIPlugin",
         "clobbers": [
             "window.ApiAIPlugin"
-        ]
-    },
-    {
-        "file": "plugins/org.apache.cordova.geolocation/www/Coordinates.js",
-        "id": "org.apache.cordova.geolocation.Coordinates",
-        "clobbers": [
-            "Coordinates"
-        ]
-    },
-    {
-        "file": "plugins/org.apache.cordova.geolocation/www/PositionError.js",
-        "id": "org.apache.cordova.geolocation.PositionError",
-        "clobbers": [
-            "PositionError"
-        ]
-    },
-    {
-        "file": "plugins/org.apache.cordova.geolocation/www/Position.js",
-        "id": "org.apache.cordova.geolocation.Position",
-        "clobbers": [
-            "Position"
-        ]
-    },
-    {
-        "file": "plugins/org.apache.cordova.geolocation/www/geolocation.js",
-        "id": "org.apache.cordova.geolocation.geolocation",
-        "clobbers": [
-            "navigator.geolocation"
         ]
     },
     {
@@ -215,16 +173,59 @@ module.exports = [
             "cordova"
         ],
         "runs": true
+    },
+    {
+        "file": "plugins/org.apache.cordova.geolocation/www/Coordinates.js",
+        "id": "org.apache.cordova.geolocation.Coordinates",
+        "clobbers": [
+            "Coordinates"
+        ]
+    },
+    {
+        "file": "plugins/org.apache.cordova.geolocation/www/PositionError.js",
+        "id": "org.apache.cordova.geolocation.PositionError",
+        "clobbers": [
+            "PositionError"
+        ]
+    },
+    {
+        "file": "plugins/org.apache.cordova.geolocation/www/Position.js",
+        "id": "org.apache.cordova.geolocation.Position",
+        "clobbers": [
+            "Position"
+        ]
+    },
+    {
+        "file": "plugins/org.apache.cordova.geolocation/www/geolocation.js",
+        "id": "org.apache.cordova.geolocation.geolocation",
+        "clobbers": [
+            "navigator.geolocation"
+        ]
+    },
+    {
+        "file": "plugins/org.apache.cordova.media/www/MediaError.js",
+        "id": "org.apache.cordova.media.MediaError",
+        "clobbers": [
+            "window.MediaError"
+        ]
+    },
+    {
+        "file": "plugins/org.apache.cordova.media/www/Media.js",
+        "id": "org.apache.cordova.media.Media",
+        "clobbers": [
+            "window.Media"
+        ]
     }
 ];
 module.exports.metadata = 
 // TOP OF METADATA
 {
-    "org.apache.cordova.media": "0.2.16",
     "ai.api.apiaiplugin": "1.3.1",
-    "org.apache.cordova.geolocation": "0.3.12",
+    "android.support.v4": "21.0.1",
     "org.apache.cordova.device-orientation": "0.3.11",
-    "org.apache.cordova.file": "1.3.3"
+    "org.apache.cordova.file": "1.3.3",
+    "org.apache.cordova.geolocation": "0.3.12",
+    "org.apache.cordova.media": "0.2.16"
 }
 // BOTTOM OF METADATA
 });

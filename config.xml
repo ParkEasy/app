@@ -67,5 +67,19 @@
     <icon gap:platform="ios" height="144" src="www/res/icon/ios/Icon-72@2x.png" width="144" />
     <icon gap:platform="ios" height="76" src="www/res/icon/ios/Icon-76.png" width="76" />
     <icon gap:platform="ios" height="152" src="www/res/icon/ios/Icon-76@2x.png" width="152" />
+
+    <gap:splash src="www/res/splash/android/res-long-port-ldpi/default.png" density="port-ldpi"/>
+    <gap:splash src="www/res/splash/android/res-long-port-mdpi/default.png" density="port-mdpi"/>
+    <gap:splash src="www/res/splash/android/res-long-port-hdpi/default.png" density="port-hdpi"/>
+    <gap:splash src="www/res/splash/android/res-long-port-xhdpi/default.png" density="port-xhdpi"/>
+    <gap:splash src="www/res/splash/android/res-long-port-xxhdpi/default.png" density="port-xxhdpi"/>
+    <gap:splash src="www/res/splash/android/res-long-port-xxxhdpi/default.png" density="port-xxxhdpi"/>
+    
+    <gap:splash gap:platform="ios" height="480" width="320" src="www/res/splash/ios/Default.png" />
+    <gap:splash gap:platform="ios" height="960" width="640" src="www/res/splash/ios/Default@2x.png" />
+    <gap:splash gap:platform="ios" height="1136" width="640" src="www/res/splash/ios/Default-568h@2x.png" />
+    <gap:splash gap:platform="ios" height="1334" width="750" src="www/res/splash/ios/Default-667h@2x.png" />
+    <gap:splash gap:platform="ios" height="2208" width="1242" src="www/res/splash/ios/Default-667h@2x.png" />
+
     <access origin="*" />
 </widget>
