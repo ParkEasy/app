@@ -50,6 +50,7 @@
 		E6503B39DAF547F28AF960D1 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43C22C048C9741E697794343 /* CoreAudio.framework */; };
 		8ABC6E73A55D49F38BB27BCC /* CDVLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = D4DD41FC912E49C9891B5DBE /* CDVLocation.m */; };
 		A955F7DEEA5945D982AB9716 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5FCBBA5EA2F04F718D6C1B17 /* CoreLocation.framework */; };
+		1E5F122E3F284976B06F23EC /* CDVCompass.m in Sources */ = {isa = PBXBuildFile; fileRef = FB04DE34AE3B42B4A7DB0AD4 /* CDVCompass.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -138,6 +139,8 @@
 		D4DD41FC912E49C9891B5DBE /* CDVLocation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "CDVLocation.m"; path = "org.apache.cordova.geolocation/CDVLocation.m"; sourceTree = "<group>"; fileEncoding = 4; };
 		5652D06B314849E0B607E3F1 /* CDVLocation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CDVLocation.h"; path = "org.apache.cordova.geolocation/CDVLocation.h"; sourceTree = "<group>"; fileEncoding = 4; };
 		5FCBBA5EA2F04F718D6C1B17 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "CoreLocation.framework"; path = "System/Library/Frameworks/CoreLocation.framework"; sourceTree = SDKROOT; fileEncoding = 4; };
+		FB04DE34AE3B42B4A7DB0AD4 /* CDVCompass.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "CDVCompass.m"; path = "org.apache.cordova.device-orientation/CDVCompass.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		267AAB42117F43C992A4EA9A /* CDVCompass.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CDVCompass.h"; path = "org.apache.cordova.device-orientation/CDVCompass.h"; sourceTree = "<group>"; fileEncoding = 4; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -266,6 +269,8 @@
 				D0CF17C068BC46E8A2C710DF /* ApiAIPlugin.h */,
 				D4DD41FC912E49C9891B5DBE /* CDVLocation.m */,
 				5652D06B314849E0B607E3F1 /* CDVLocation.h */,
+				FB04DE34AE3B42B4A7DB0AD4 /* CDVCompass.m */,
+				267AAB42117F43C992A4EA9A /* CDVCompass.h */,
 			);
 			name = Plugins;
 			path = "ParkEasy/Plugins";
@@ -456,6 +461,7 @@
 				BBD7F347A8014530BBAF7323 /* CDVSound.m in Sources */,
 				E5AEEA84C1E2403C8E687992 /* ApiAIPlugin.m in Sources */,
 				8ABC6E73A55D49F38BB27BCC /* CDVLocation.m in Sources */,
+				1E5F122E3F284976B06F23EC /* CDVCompass.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

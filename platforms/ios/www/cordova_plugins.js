@@ -50,6 +50,27 @@ module.exports = [
         ]
     },
     {
+        "file": "plugins/org.apache.cordova.device-orientation/www/CompassError.js",
+        "id": "org.apache.cordova.device-orientation.CompassError",
+        "clobbers": [
+            "CompassError"
+        ]
+    },
+    {
+        "file": "plugins/org.apache.cordova.device-orientation/www/CompassHeading.js",
+        "id": "org.apache.cordova.device-orientation.CompassHeading",
+        "clobbers": [
+            "CompassHeading"
+        ]
+    },
+    {
+        "file": "plugins/org.apache.cordova.device-orientation/www/compass.js",
+        "id": "org.apache.cordova.device-orientation.compass",
+        "clobbers": [
+            "navigator.compass"
+        ]
+    },
+    {
         "file": "plugins/org.apache.cordova.file/www/DirectoryEntry.js",
         "id": "org.apache.cordova.file.DirectoryEntry",
         "clobbers": [
@@ -202,6 +223,7 @@ module.exports.metadata =
     "org.apache.cordova.media": "0.2.16",
     "ai.api.apiaiplugin": "1.3.1",
     "org.apache.cordova.geolocation": "0.3.12",
+    "org.apache.cordova.device-orientation": "0.3.11",
     "org.apache.cordova.file": "1.3.3"
 }
 // BOTTOM OF METADATA

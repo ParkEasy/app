@@ -82,4 +82,7 @@
     <icon gap:platform="ios" height="76" src="www/res/icon/ios/Icon-76.png" width="76" />
     <icon gap:platform="ios" height="152" src="www/res/icon/ios/Icon-76@2x.png" width="152" />
     <access origin="*" />
+    <feature name="Compass">
+        <param name="android-package" value="org.apache.cordova.deviceorientation.CompassListener" />
+    </feature>
 </widget>
