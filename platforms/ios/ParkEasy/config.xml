@@ -35,6 +35,9 @@
     <feature name="Media">
         <param name="ios-package" value="CDVSound" />
     </feature>
+    <feature name="Notification">
+        <param name="ios-package" value="CDVNotification" />
+    </feature>
     <name>ParkEasy</name>
     <description>
         Hello World sample application that responds to the deviceready event.

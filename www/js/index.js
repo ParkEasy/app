@@ -95,6 +95,13 @@ app.controller("MapCtrl", function($scope, $cordovaGeolocation, $location) {
 		// load positions
 		$.get("http://parkapi.azurewebsites.net/search?lat=" + lat + "&lon=" + lon + "&speed=" + spd + "&hours=" + hours, function(data) {
 
+			if (data.state === "parking") {
+				window.clearInterval(watch);
+				window.detail = data.parking.id;
+				$location.path("parked");
+				$location.refresh();
+			}
+
 			var ids = [];
 			for (var d in data.parking) {
 
@@ -116,7 +123,7 @@ app.controller("MapCtrl", function($scope, $cordovaGeolocation, $location) {
 						})
 						.on("click", function(e) {
 							window.detail = e.target.options.alt;
-							$location.path("navi");
+							$location.path("parked");
 							$location.replace();
 
 						})
@@ -199,9 +206,8 @@ app.controller("HoursCtrl", function($scope, $location) {
 	$(".apple-watch").swipe({
 		swipeRight: function(event, direction, distance, duration, fingerCount) {
 			//This only fires when the user swipes left
-			$scope.$apply(function() {
-				$location.path("map");
-			});
+			$location.path("map");
+			$location.replace();
 		}
 	});
 
@@ -489,9 +495,6 @@ app.controller("NaviCtrl", function($scope, $cordovaGeolocation, $location, $cor
 
 	$(".apple-watch").swipe({
 		swipeRight: function(event, direction, distance, duration, fingerCount) {
-			console.log("swap");
-
-			console.log($scope, $scope.$apply);
 
 			// this only fires when the user swipes left+
 
@@ -513,6 +516,43 @@ app.controller("NaviCtrl", function($scope, $cordovaGeolocation, $location, $cor
 });
 
 // PARKED CONTROLLER
-app.controller("ParkedCtrl", function($scope) {
+app.controller("ParkedCtrl", function($scope, $location) {
 
+	$.getJSON("http://parkapi.azurewebsites.net/detail?id=" + window.detail, function(parking) {
+		console.log(parking);
+
+		$scope.$apply(function() {
+			$scope.name = parking.Name;
+		});
+	});
+
+	$(".apple-watch").swipe({
+		swipeRight: function(event, direction, distance, duration, fingerCount) {
+			console.log("swipe");
+			//This only fires when the user swipes left
+			$scope.$apply(function() {
+				$location.path("map");
+				$location.replace();
+			});
+		}
+	});
+
+	$("#freeQuestion").on("change", function(e) {
+
+		if (window.detail) {
+			var v = $(e.target).val();
+			$.get("http://parkapi.azurewebsites.net/status?id=" + window.detail + "&amount=" + v, function(result) {
+				console.log(result);
+				if (result) {
+					navigator.notification.alert("Deine Einschätzung wurde gespeichert.", function() {
+						$scope.$apply(function() {
+							$location.path("map");
+							$location.replace();
+						});
+
+					}, "Danke!", "OK")
+				}
+			});
+		}
+	});
 });
