@@ -1,9 +1,13 @@
 var app = angular.module("parkeasy", ["ngRoute", "ngCordova"]).
 config(function($routeProvider) {
 	$routeProvider.
-	when("/hours", {
-		templateUrl: "partials/hours.html",
-		controller: "HoursCtrl"
+	when("/hoursvoice", {
+		templateUrl: "partials/hours_voice.html",
+		controller: "HoursVoiceCtrl"
+	}).
+	when("/hourstouch", {
+		templateUrl: "partials/hours_touch.html",
+		controller: "HoursTouchCtrl"
 	}).
 	when("/map", {
 		templateUrl: "partials/map.html",
@@ -62,10 +66,18 @@ app.controller("MapCtrl", function($scope, $cordovaGeolocation, $location) {
 	// on longpress -> go to hours input
 	$("#map").longpress(function() {
 
-		// longpress callback
-		$scope.$apply(function() {
-			$location.path("hours");
-		});
+		if (window.speed && window.speed > 0) {
+			// longpress callback
+			$scope.$apply(function() {
+				$location.path("hoursvoice");
+			});
+		} else {
+			// longpress callback
+			$scope.$apply(function() {
+				$location.path("hourstouch");
+			});
+		}
+
 
 	}, 2000);
 
@@ -101,6 +113,8 @@ app.controller("MapCtrl", function($scope, $cordovaGeolocation, $location) {
 				$location.path("parked");
 				$location.refresh();
 			}
+
+			window.speed = spd;
 
 			var ids = [];
 			for (var d in data.parking) {
@@ -197,8 +211,8 @@ app.controller("MapCtrl", function($scope, $cordovaGeolocation, $location) {
 	});
 });
 
-// HOURS CONTROLLER 
-app.controller("HoursCtrl", function($scope, $location) {
+// HOURSVOICE CONTROLLER 
+app.controller("HoursVoiceCtrl", function($scope, $location) {
 
 	window.hours = window.hours || 1;
 	$scope.hours = window.hours;
@@ -555,4 +569,12 @@ app.controller("ParkedCtrl", function($scope, $location) {
 			});
 		}
 	});
+});
+
+// HOURSTOUCH CONTROLLER
+app.controller("HoursTouchCtrl", function($scope, $location) {
+
+
+
+
 });
