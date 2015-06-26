@@ -37,11 +37,14 @@ app.controller("AppCtrl", function($scope, $location, $cordovaGeolocation) {
 	// demo
 	$("#demo").on("click", function() {
 		if ($("#demo").data("state") === "off") {
+
 			$("#demo").html("Demo-Modus ausschalten");
-			window.demo = true;
+			$("#demo").data("state", "on");
+			window.demomode = true;
 		} else {
 			$("#demo").html("Demo-Modus einschalten");
-			window.demo = false;
+			$("#demo").data("state", "off");
+			window.demomode = false;
 		}
 	});
 
@@ -68,7 +71,8 @@ app.controller("AppCtrl", function($scope, $location, $cordovaGeolocation) {
 		// call gps position every 2 seconds
 		watch = window.setInterval(function() {
 
-			if (!window.demo) {
+
+			if (!window.demomode) {
 
 				$cordovaGeolocation
 					.getCurrentPosition({
@@ -81,15 +85,17 @@ app.controller("AppCtrl", function($scope, $location, $cordovaGeolocation) {
 
 					// [[50.86727838067179,7.07387501182157,1,28,1,131.83305888840505]]
 
-					var pos = {
-						coords: {
-							latitude: data[0][0],
-							longitude: data[0][1],
-							speed: data[0][3]
-						}
-					};
+					if (data.length > 0) {
+						var pos = {
+							coords: {
+								latitude: data[0][0],
+								longitude: data[0][1],
+								speed: data[0][3]
+							}
+						};
 
-					publishGPS(pos);
+						publishGPS(pos);
+					}
 				});
 			}
 
@@ -198,6 +204,7 @@ app.controller("MapCtrl", function($scope, $location) {
 			for (var m in keys) {
 				if (ids.indexOf(keys[m]) < 0) {
 					map.removeLayer(markers[keys[m]]);
+					delete markers[keys[m]];
 				}
 			}
 
