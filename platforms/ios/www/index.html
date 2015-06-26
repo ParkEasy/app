@@ -14,14 +14,14 @@
         <title>ParkEasy</title>
     </head>
     <body ng-controller="AppCtrl">
-    
-        <div class="apple-watch"><div class="apple-watch-screen"></div></div>
 
         <div class="apple-watch">
             <div class="apple-watch-screen">
                 <div ng-view></div>
             </div>
         </div>
+
+        <button id="demo" data-state="off">Demo-Modus einschalten</button>
         
         <script src="cordova.js"></script>
         <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.1/angular.min.js"></script>
@@ -34,6 +34,7 @@
         <script src="js/jquery.touchSwipe.min.js"></script>
         <script src="js/ng-cordova.min.js"></script>
         <script src="js/jquery.longpress.js"></script>
+        <script src="js/pubsub.js"></script>
         <script src="js/index.js"></script>
     </body>
 </html>

@@ -94,3 +94,11 @@ body {
     border-radius: 30px;
     -webkit-border-radius:30px;
 }
+
+#demo {
+    bottom:10px;
+    position: absolute;
+    width:80%;
+    left:50%;
+    margin-left:-40%;
+}

@@ -27,12 +27,23 @@ config(function($routeProvider) {
 });
 
 // APP CONTROLLER
-app.controller("AppCtrl", function($scope, $location) {
+app.controller("AppCtrl", function($scope, $location, $cordovaGeolocation) {
 	$scope.setRoute = function(route) {
 		$location.path(route);
 	}
 
 	FastClick.attach(document.body);
+
+	// demo
+	$("#demo").on("click", function() {
+		if ($("#demo").data("state") === "off") {
+			$("#demo").html("Demo-Modus ausschalten");
+			window.demo = true;
+		} else {
+			$("#demo").html("Demo-Modus einschalten");
+			window.demo = false;
+		}
+	});
 
 	document.addEventListener("deviceready", function() {
 
@@ -49,11 +60,47 @@ app.controller("AppCtrl", function($scope, $location) {
 			}
 		);
 
+		// publish GPS
+		var publishGPS = function(position) {
+			PubSub.publish("gps", position);
+		};
+
+		// call gps position every 2 seconds
+		watch = window.setInterval(function() {
+
+			if (!window.demo) {
+
+				$cordovaGeolocation
+					.getCurrentPosition({
+						timeout: 30000,
+						enableHighAccuracy: true
+					})
+					.then(publishGPS);
+			} else {
+				$.getJSON("http://oca.la:8123/get", function(data) {
+
+					// [[50.86727838067179,7.07387501182157,1,28,1,131.83305888840505]]
+
+					var pos = {
+						coords: {
+							latitude: data[0][0],
+							longitude: data[0][1],
+							speed: data[0][3]
+						}
+					};
+
+					publishGPS(pos);
+				});
+			}
+
+		}, 2000);
+
 	}, false);
+
 });
 
 // MAP CONTROLLER
-app.controller("MapCtrl", function($scope, $cordovaGeolocation, $location) {
+app.controller("MapCtrl", function($scope, $location) {
 
 	L.mapbox.accessToken = "pk.eyJ1IjoidG9tYXN6YnJ1ZSIsImEiOiJXWmNlSnJFIn0.xvLReqNnXy_wndeZ8JGOEA";
 	var map = L.mapbox.map("map", "mapbox.streets", {
@@ -78,7 +125,6 @@ app.controller("MapCtrl", function($scope, $cordovaGeolocation, $location) {
 			});
 		}
 
-
 	}, 2000);
 
 	map.on("dragstart", function() {
@@ -96,8 +142,10 @@ app.controller("MapCtrl", function($scope, $cordovaGeolocation, $location) {
 	$(".leaflet-control-attribution").hide();
 	$(".mapbox-logo").hide();
 
-	// currentPosition Sucess Event Handler
-	function onSuccess(position) {
+	// add the function to the list of subscribers for a particular topic
+	// we're keeping the returned token, in order to be able to unsubscribe
+	// from the topic later on
+	var gps = function(msg, position) {
 
 		var lat = position.coords.latitude;
 		var lon = position.coords.longitude;
@@ -108,6 +156,7 @@ app.controller("MapCtrl", function($scope, $cordovaGeolocation, $location) {
 		$.get("http://parkapi.azurewebsites.net/search?lat=" + lat + "&lon=" + lon + "&speed=" + spd + "&hours=" + hours, function(data) {
 
 			if (data.state === "parking") {
+
 				window.clearInterval(watch);
 				window.detail = data.parking.id;
 				$location.path("parked");
@@ -167,6 +216,7 @@ app.controller("MapCtrl", function($scope, $cordovaGeolocation, $location) {
 			}
 
 			if (!window.pauseFit) {
+
 				// create list of markers
 				var m = [own];
 				for (var i in markers) {
@@ -179,35 +229,13 @@ app.controller("MapCtrl", function($scope, $cordovaGeolocation, $location) {
 				});
 			}
 		});
-	}
+	};
 
-	var watch;
-
-	document.addEventListener("deviceready", function() {
-
-		$cordovaGeolocation
-			.getCurrentPosition({
-				timeout: 30000,
-				enableHighAccuracy: true
-			})
-			.then(onSuccess);
-
-		// call gps position every 2 seconds
-		watch = window.setInterval(function() {
-
-			$cordovaGeolocation
-				.getCurrentPosition({
-					timeout: 30000,
-					enableHighAccuracy: true
-				})
-				.then(onSuccess);
-
-		}, 2000);
-	});
+	PubSub.subscribe("gps", gps);
 
 	// DESTROY event for controller
 	$scope.$on("$destroy", function() {
-		window.clearInterval(watch);
+		PubSub.unsubscribe(gps);
 	});
 });
 
@@ -403,9 +431,9 @@ app.controller("HoursVoiceCtrl", function($scope, $location) {
 });
 
 // NAVI CONTROLLER
-app.controller("NaviCtrl", function($scope, $cordovaGeolocation, $location, $cordovaDeviceOrientation) {
+app.controller("NaviCtrl", function($scope, $location, $cordovaDeviceOrientation) {
 
-	var watchGPS, watchCompass;
+	var gps, watchCompass;
 
 	// get detail info by id
 	$.getJSON("http://parkapi.azurewebsites.net/detail?id=" + window.detail, function(parking) {
@@ -416,7 +444,7 @@ app.controller("NaviCtrl", function($scope, $cordovaGeolocation, $location, $cor
 		});
 
 		// GPS success callback
-		function onSuccess(position) {
+		gps = function(msg, position) {
 
 			var Parkhaus = {
 				x: parking.Coordinates[0],
@@ -437,28 +465,11 @@ app.controller("NaviCtrl", function($scope, $cordovaGeolocation, $location, $cor
 			var dist = Math.sqrt(distsquare) * 63781.37;
 
 			$scope.distance = "(" + parseInt(dist) + "m)";
-		}
+		};
+
+		PubSub.subscribe("gps", gps);
 
 		document.addEventListener("deviceready", function() {
-
-			$cordovaGeolocation
-				.getCurrentPosition({
-					timeout: 30000,
-					enableHighAccuracy: true
-				})
-				.then(onSuccess);
-
-			// call gps position every 2 seconds
-			watchGPS = window.setInterval(function() {
-
-				$cordovaGeolocation
-					.getCurrentPosition({
-						timeout: 30000,
-						enableHighAccuracy: true
-					})
-					.then(onSuccess);
-
-			}, 2000);
 
 			// watch device orientation
 			watchCompass = $cordovaDeviceOrientation.watchHeading({
@@ -511,12 +522,10 @@ app.controller("NaviCtrl", function($scope, $cordovaGeolocation, $location, $cor
 		swipeRight: function(event, direction, distance, duration, fingerCount) {
 
 			// this only fires when the user swipes left+
-
 			window.clearInterval(watchGPS);
 			window.clearInterval(watchCompass);
 			$cordovaDeviceOrientation.clearWatch(watchCompass);
 
-			console.log($location);
 			$location.path("map");
 			$location.replace();
 		}
@@ -524,7 +533,7 @@ app.controller("NaviCtrl", function($scope, $cordovaGeolocation, $location, $cor
 
 	// DESTROY event for controller
 	$scope.$on("$destroy", function() {
-		window.clearInterval(watchGPS);
+		PubSub.unsubscribe(gps);
 		$cordovaDeviceOrientation.clearWatch(watchCompass);
 	});
 });
@@ -573,8 +582,6 @@ app.controller("ParkedCtrl", function($scope, $location) {
 
 // HOURSTOUCH CONTROLLER
 app.controller("HoursTouchCtrl", function($scope, $location) {
-
-
 
 
 });
