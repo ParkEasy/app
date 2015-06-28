@@ -90,9 +90,12 @@ app.controller("AppCtrl", function($scope, $location, $cordovaGeolocation) {
 							coords: {
 								latitude: data[0][0],
 								longitude: data[0][1],
-								speed: data[0][3]
+								speed: data[0][3],
+								heading: data[0][5]
 							}
 						};
+
+						console.log(pos);
 
 						publishGPS(pos);
 					}
@@ -165,8 +168,11 @@ app.controller("MapCtrl", function($scope, $location) {
 
 				window.clearInterval(watch);
 				window.detail = data.parking.id;
-				$location.path("parked");
-				$location.refresh();
+
+				$scope.$apply(function() {
+					$location.path("parked");
+					$location.refresh();
+				});
 			}
 
 			window.speed = spd;
@@ -192,8 +198,10 @@ app.controller("MapCtrl", function($scope, $location) {
 						})
 						.on("click", function(e) {
 							window.detail = e.target.options.alt;
-							$location.path("parked");
-							$location.replace();
+							$scope.$apply(function() {
+								$location.path("navi");
+								$location.replace();
+							});
 
 						})
 						.addTo(map);
@@ -447,11 +455,13 @@ app.controller("NaviCtrl", function($scope, $location, $cordovaDeviceOrientation
 
 		// find out streetname
 		$.getJSON("http://router.project-osrm.org/nearest?loc=" + parking.Coordinates[1] + "," + parking.Coordinates[0], function(location) {
-			$scope.street = location.name || "";
+			$scope.street = location.name || parking.Name;
 		});
 
 		// GPS success callback
 		gps = function(msg, position) {
+
+			console.log(parking);
 
 			var Parkhaus = {
 				x: parking.Coordinates[0],
@@ -471,7 +481,52 @@ app.controller("NaviCtrl", function($scope, $location, $cordovaDeviceOrientation
 			var distsquare = deltaX * deltaX + deltaY * deltaY;
 			var dist = Math.sqrt(distsquare) * 63781.37;
 
-			$scope.distance = "(" + parseInt(dist) + "m)";
+			$scope.$apply(function() {
+				$scope.distance = "(" + parseInt(dist) + "m)";
+			});
+
+			// parked
+			if (parseInt(dist) <= 3 && position.coords.speed == 0) {
+				window.detail = parking.Id;
+				PubSub.unsubscribe(gps);
+				window.clearInterval(watchCompass);
+				$cordovaDeviceOrientation.clearWatch(watchCompass);
+				$location.path("parked");
+				$location.refresh();
+			}
+
+			if (window.demomode) {
+
+				var point1 = {
+					"type": "Feature",
+					"properties": {},
+					"geometry": {
+						"type": "Point",
+						"coordinates": [position.coords.longitude, position.coords.latitude]
+					}
+				};
+
+				var point2 = {
+					"type": "Feature",
+					"properties": {},
+					"geometry": {
+						"type": "Point",
+						"coordinates": [parking.Coordinates[0], parking.Coordinates[1]]
+					}
+				};
+
+				var winkel = turf.bearing(point1, point2) % 360;
+				var bearing = (winkel - position.coords.heading) % 360;
+
+				console.log(position.coords.heading, winkel, bearing);
+
+				var arr = document.getElementById("arrow");
+				if (arr) {
+
+					arr.style.transform = "rotate(" + bearing + "deg)";
+					arr.style.webkitTransform = "rotate(" + bearing + "deg)";
+				}
+			}
 		};
 
 		PubSub.subscribe("gps", gps);
@@ -489,7 +544,7 @@ app.controller("NaviCtrl", function($scope, $location, $cordovaDeviceOrientation
 
 					var heading = result.magneticHeading || result.trueHeading;
 
-					if (window.position) {
+					if (window.position && !window.demomode) {
 
 						var point1 = {
 							"type": "Feature",
@@ -529,7 +584,7 @@ app.controller("NaviCtrl", function($scope, $location, $cordovaDeviceOrientation
 		swipeRight: function(event, direction, distance, duration, fingerCount) {
 
 			// this only fires when the user swipes left+
-			window.clearInterval(watchGPS);
+			PubSub.unsubscribe(gps);
 			window.clearInterval(watchCompass);
 			$cordovaDeviceOrientation.clearWatch(watchCompass);
 
