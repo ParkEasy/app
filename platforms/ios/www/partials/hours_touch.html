@@ -1,1 +1,12 @@
-touch
+<center>
+	<p class="topinfo">Wie viele Stunden möchtest du parken?</p>
+
+	<button type="button" class="toggleBtn" id="inc2" onclick="inc('out2');" align="left">+</button>  
+	<button type="button" class="toggleBtn" id="inc1" onclick="inc1('out');" align="left">+</button><br> 
+
+	<input type="number" id="out2" value="0" wdith="50" value="{{hours}}" readonly /> <font color="#FFFFFF"> , </font>
+	<input type="number" id="out" value="0" width="50" value="{{minutes}}" readonly /><br>
+
+	<button type="button" class="toggleBtn" id="dec2" onclick="dec('out2');" align="left" >-</button> 
+	<button type="button" class="toggleBtn" id="dec1" onclick="dec1('out');" align="left" >-</button>
+</center>

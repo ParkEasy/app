@@ -36,5 +36,29 @@
         <script src="js/jquery.longpress.js"></script>
         <script src="js/pubsub.js"></script>
         <script src="js/index.js"></script>
+        <script>
+            function inc(out){
+                field = document.getElementById(out);
+                if(field.value<=11){
+                field.value++;} else field.value==12;
+            }
+            function dec(out){
+                if(field.value<1)
+                {return field.value==0;}
+                else{
+                field = document.getElementById(out);
+                field.value--;
+                }
+            }
+
+            function inc1(out){
+                field = document.getElementById(out);
+                field.value=5;
+            }
+            function dec1(out){
+                field = document.getElementById(out);
+                field.value=0;
+            }
+        </script>
     </body>
 </html>

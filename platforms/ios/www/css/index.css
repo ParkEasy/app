@@ -98,7 +98,17 @@ body {
 #demo {
     bottom:10px;
     position: absolute;
-    width:80%;
+    width:70%;
     left:50%;
-    margin-left:-40%;
+    margin-left:-35%;
+}
+
+#out2, #out {
+    width:45px !important;
+    font-size: 1.5em;
+}
+
+.toggleBtn {
+    font-size: 1.5em;
+    width:45px;
 }

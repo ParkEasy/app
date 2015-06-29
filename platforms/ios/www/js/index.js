@@ -65,12 +65,14 @@ app.controller("AppCtrl", function($scope, $location, $cordovaGeolocation) {
 
 		// publish GPS
 		var publishGPS = function(position) {
+			window.speed = position.coords.speed;
 			PubSub.publish("gps", position);
 		};
 
 		// call gps position every 2 seconds
-		watch = window.setInterval(function() {
+		window.setInterval(function() {
 
+			console.log("gps interval");
 
 			if (!window.demomode) {
 
@@ -94,8 +96,6 @@ app.controller("AppCtrl", function($scope, $location, $cordovaGeolocation) {
 								heading: data[0][5]
 							}
 						};
-
-						console.log(pos);
 
 						publishGPS(pos);
 					}
@@ -122,7 +122,7 @@ app.controller("MapCtrl", function($scope, $location) {
 	// on longpress -> go to hours input
 	$("#map").longpress(function() {
 
-		if (window.speed && window.speed > 0) {
+		if (window.speed && window.speed > 1.5) {
 			// longpress callback
 			$scope.$apply(function() {
 				$location.path("hoursvoice");
@@ -171,82 +171,81 @@ app.controller("MapCtrl", function($scope, $location) {
 
 				$scope.$apply(function() {
 					$location.path("parked");
-					$location.refresh();
+					if ($location.refresh) $location.refresh();
 				});
-			}
+			} else {
+				var ids = [];
+				for (var d in data.parking) {
 
-			window.speed = spd;
+					var p = data.parking[d];
+					ids.push(p.id);
 
-			var ids = [];
-			for (var d in data.parking) {
+					if (!markers[p.id]) {
+						markers[p.id] = L.marker([p.coord[1], p.coord[0]], {
+							"icon": L.mapbox.marker.icon({
+								"marker-size": "large",
+								"marker-symbol": "parking",
+								"marker-color": "#3498db"
+							}),
+							"alt": p.id
+						})
+							.bindLabel(parseFloat(p.price).toFixed(1) + "€", {
+								noHide: true,
+								direction: "auto"
+							})
+							.on("click", function(e) {
+								window.detail = e.target.options.alt;
+								$scope.$apply(function() {
+									$location.path("navi");
+									$location.replace();
+								});
 
-				var p = data.parking[d];
-				ids.push(p.id);
+							})
+							.addTo(map);
+					}
+				}
 
-				if (!markers[p.id]) {
-					markers[p.id] = L.marker([p.coord[1], p.coord[0]], {
+				var keys = Object.keys(markers);
+				for (var m in keys) {
+					if (ids.indexOf(keys[m]) < 0) {
+						map.removeLayer(markers[keys[m]]);
+						delete markers[keys[m]];
+					}
+				}
+
+				// add or update own position
+				if (!own) {
+					own = L.marker([lat, lon], {
 						"icon": L.mapbox.marker.icon({
 							"marker-size": "large",
-							"marker-symbol": "parking",
-							"marker-color": "#3498db"
-						}),
-						"alt": p.id
-					})
-						.bindLabel(p.price + "€", {
-							noHide: true,
-							direction: "auto"
+							"marker-symbol": "car",
+							"marker-color": "#e74c3c"
 						})
-						.on("click", function(e) {
-							window.detail = e.target.options.alt;
-							$scope.$apply(function() {
-								$location.path("navi");
-								$location.replace();
-							});
+					}).addTo(map);
 
-						})
-						.addTo(map);
+				} else {
+					own.setLatLng([lat, lon]);
 				}
-			}
 
-			var keys = Object.keys(markers);
-			for (var m in keys) {
-				if (ids.indexOf(keys[m]) < 0) {
-					map.removeLayer(markers[keys[m]]);
-					delete markers[keys[m]];
+				if (!window.pauseFit) {
+
+					// create list of markers
+					var m = [own];
+					for (var i in markers) {
+						m.push(markers[i]);
+					}
+					var group = new L.featureGroup(m);
+
+					map.fitBounds(group.getBounds(), {
+						padding: [20, 20]
+					});
 				}
-			}
-
-			// add or update own position
-			if (!own) {
-				own = L.marker([lat, lon], {
-					"icon": L.mapbox.marker.icon({
-						"marker-size": "large",
-						"marker-symbol": "car",
-						"marker-color": "#e74c3c"
-					})
-				}).addTo(map);
-
-			} else {
-				own.setLatLng([lat, lon]);
-			}
-
-			if (!window.pauseFit) {
-
-				// create list of markers
-				var m = [own];
-				for (var i in markers) {
-					m.push(markers[i]);
-				}
-				var group = new L.featureGroup(m);
-
-				map.fitBounds(group.getBounds(), {
-					padding: [20, 20]
-				});
 			}
 		});
 	};
 
 	PubSub.subscribe("gps", gps);
+	console.log("subscribe");
 
 	// DESTROY event for controller
 	$scope.$on("$destroy", function() {
@@ -486,7 +485,7 @@ app.controller("NaviCtrl", function($scope, $location, $cordovaDeviceOrientation
 			});
 
 			// parked
-			if (parseInt(dist) <= 3 && position.coords.speed == 0) {
+			if (parseInt(dist) <= 7 && position.coords.speed <= 1) {
 				window.detail = parking.Id;
 				PubSub.unsubscribe(gps);
 				window.clearInterval(watchCompass);
@@ -603,14 +602,6 @@ app.controller("NaviCtrl", function($scope, $location, $cordovaDeviceOrientation
 // PARKED CONTROLLER
 app.controller("ParkedCtrl", function($scope, $location) {
 
-	$.getJSON("http://parkapi.azurewebsites.net/detail?id=" + window.detail, function(parking) {
-		console.log(parking);
-
-		$scope.$apply(function() {
-			$scope.name = parking.Name;
-		});
-	});
-
 	$(".apple-watch").swipe({
 		swipeRight: function(event, direction, distance, duration, fingerCount) {
 			console.log("swipe");
@@ -620,6 +611,14 @@ app.controller("ParkedCtrl", function($scope, $location) {
 				$location.replace();
 			});
 		}
+	});
+
+	$.getJSON("http://parkapi.azurewebsites.net/detail?id=" + window.detail, function(parking) {
+		console.log(parking);
+
+		$scope.$apply(function() {
+			$scope.name = parking.Name;
+		});
 	});
 
 	$("#freeQuestion").on("change", function(e) {
@@ -645,5 +644,30 @@ app.controller("ParkedCtrl", function($scope, $location) {
 // HOURSTOUCH CONTROLLER
 app.controller("HoursTouchCtrl", function($scope, $location) {
 
+	window.hours = window.hours || 1;
 
+	var hourspart = parseInt(window.hours);
+	var minutespart = window.hours - hourspart;
+
+	console.log(hourspart, minutespart);
+
+	$("#out2").val(hourspart);
+	$("#out").val(minutespart);
+
+	$(".apple-watch").swipe({
+		swipeRight: function(event, direction, distance, duration, fingerCount) {
+
+			window.hours = parseFloat($("#out2").val() + "." + $("#out").val());
+
+			navigator.notification.alert("Alles klar, " + window.hours + " Stunden", function() {
+
+
+				$scope.$apply(function() {
+					$location.path("map");
+					$location.replace();
+				});
+			}, "Gespeichert!", "OK")
+
+		}
+	});
 });
