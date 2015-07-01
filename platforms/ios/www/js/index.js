@@ -651,8 +651,10 @@ app.controller("HoursTouchCtrl", function($scope, $location) {
 
 	console.log(hourspart, minutespart);
 
+	var min = (minutespart == 0.5) ? 5 : 0;
+
 	$("#out2").val(hourspart);
-	$("#out").val(minutespart);
+	$("#out").val(min);
 
 	$(".apple-watch").swipe({
 		swipeRight: function(event, direction, distance, duration, fingerCount) {

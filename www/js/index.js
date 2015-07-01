@@ -56,7 +56,7 @@ app.controller("AppCtrl", function($scope, $location, $cordovaGeolocation) {
 				lang: "de" // set lang tag from list of supported languages
 			},
 			function(result) {
-				console.log(JSON.stringify(error));
+				console.log(JSON.stringify(result));
 			},
 			function(error) {
 				console.log(JSON.stringify(error));
@@ -270,125 +270,41 @@ app.controller("HoursVoiceCtrl", function($scope, $location) {
 	document.addEventListener("deviceready", function() {
 
 		// play the audio file at url
-		var question = new Media("http://translate.google.com/translate_tts?tl=de&q=Wie%20viele%20Stunden%20m%C3%B6chtest%20du%20parken?",
+		var question = new Media("http://translate.google.com/translate_tts?tl=de&q=Wie%20viele%20Stunden%20moechtest%20du%20parken?",
 
 			// success callback
 			function() {
 				question.release();
 
-				// play siri start sound
-				var siri_on = new Media("sounds/siri_on.mp3", function() {
+				window.setTimeout(function() {
 
-						siri_on.release();
+					// try starting a recording
+					ApiAIPlugin.levelMeterCallback(function(level) {
 
-						// try starting a recording
-						ApiAIPlugin.levelMeterCallback(function(level) {
+						var circle = document.getElementById("circle");
 
-							var circle = document.getElementById("circle");
+						if (circle) {
+							transform = "scale3d(" + (level + 1.0) + ", " + (level + 1.0) + ", " + (level + 1.0) + ")";
+							circle.style.transform = transform;
+							circle.style.webkitTransform = transform;
+						}
 
-							if (circle) {
-								transform = "scale3d(" + (level + 1.0) + ", " + (level + 1.0) + ", " + (level + 1.0) + ")";
-								circle.style.transform = transform;
-								circle.style.webkitTransform = transform;
-							}
+						console.log(transform);
+					});
 
-							console.log(transform);
-						});
+					ApiAIPlugin.setListeningStartCallback(function() {
+						console.log("listen start");
+					});
 
-						ApiAIPlugin.setListeningStartCallback(function() {
-							console.log("listen start");
-						});
+					ApiAIPlugin.setListeningFinishCallback(function() {
+						console.log("listen stop");
+					});
 
-						ApiAIPlugin.setListeningFinishCallback(function() {
-							console.log("listen stop");
-						});
+					ApiAIPlugin.requestVoice({}, // empty for simple requests, some optional parameters can be here
+						function(response) {
 
-						ApiAIPlugin.requestVoice({}, // empty for simple requests, some optional parameters can be here
-							function(response) {
-
-								if (!response || !response.result.parameters) {
-									var sorry = ["Tut mir Leid", "Sorry", "Oh weh", "Oh nein", "Entschuldige", "Mein Fehler", "Ups"];
-									var greeting = sorry[Math.floor(Math.random() * sorry.length)];
-									var siri_off = new Media("http://translate.google.com/translate_tts?tl=de&q=" + encodeURIComponent(greeting) + ".%20Das%20habe%20ich%20nicht%20verstanden.", function() {
-										siri_off.release();
-
-										// go back to map
-										$scope.$apply(function() {
-											$location.path("map");
-										});
-
-									}, function(err) {
-										console.error(err);
-
-										// go back to map
-										$scope.$apply(function() {
-											$location.path("map");
-										});
-									});
-
-									siri_off.play();
-
-								} else {
-
-									// place your result processing here
-									var std = response.result.parameters.Stunden;
-									var min = response.result.parameters.Minuten;
-
-									var value = "";
-									var hours = 0.0;
-
-									// check if it was stunden or minuten
-									if (std != "") {
-
-										var hour = hours = parseInt(std);
-										if (hour == 1) {
-											value = hour + " Stunde";
-										} else {
-											value = hour + " Stunden";
-										}
-
-									} else if (min != "") {
-
-										var minute = parseInt(min);
-										hours = minute / 60.0;
-										value = minute + " Minuten";
-									}
-
-									window.hours = hours;
-									$scope.hours = hours;
-
-									var okays = ["Alles klar", "In Ordnung", "Geht klar", "Okay", "Super", "OK"];
-									var greeting = okays[Math.floor(Math.random() * okays.length)];
-									var url = "http://translate.google.com/translate_tts?ie=UTF-8&q=" + encodeURIComponent(greeting) + "." + encodeURIComponent(value) + ".&tl=de-DE";
-
-									var confirmation = new Media(url, function() {
-
-										confirmation.release();
-
-										// go back to map
-										$scope.$apply(function() {
-											$location.path("map");
-										});
-
-									}, function(err) {
-										console.error(err);
-
-										// go back to map
-										$scope.$apply(function() {
-											$location.path("map");
-										});
-									});
-
-									confirmation.play();
-								}
-							},
-							function(error) {
-
-								ApiAIPlugin.cancelAllRequests();
-								console.log(error);
-
-								// place your error processing here
-								var sorry = ["Tut mir Leid", "Oh nein", "Entschuldige", "Mein Fehler", "Ups"];
+							if (!response || !response.result.parameters) {
+								var sorry = ["Tut mir Leid", "Sorry", "Oh weh", "Oh nein", "Entschuldige", "Mein Fehler", "Ups"];
 								var greeting = sorry[Math.floor(Math.random() * sorry.length)];
 								var siri_off = new Media("http://translate.google.com/translate_tts?tl=de&q=" + encodeURIComponent(greeting) + ".%20Das%20habe%20ich%20nicht%20verstanden.", function() {
 									siri_off.release();
@@ -408,18 +324,90 @@ app.controller("HoursVoiceCtrl", function($scope, $location) {
 								});
 
 								siri_off.play();
+
+							} else {
+
+								// place your result processing here
+								var std = response.result.parameters.Stunden;
+								var min = response.result.parameters.Minuten;
+
+								var value = "";
+								var hours = 0.0;
+
+								// check if it was stunden or minuten
+								if (std != "") {
+
+									var hour = hours = parseInt(std);
+									if (hour == 1) {
+										value = hour + " Stunde";
+									} else {
+										value = hour + " Stunden";
+									}
+
+								} else if (min != "") {
+
+									var minute = parseInt(min);
+									hours = minute / 60.0;
+									value = minute + " Minuten";
+								}
+
+								window.hours = hours;
+								$scope.hours = hours;
+
+								var okays = ["Alles klar", "In Ordnung", "Geht klar", "Okay", "Super", "OK"];
+								var greeting = okays[Math.floor(Math.random() * okays.length)];
+								var url = "http://translate.google.com/translate_tts?ie=UTF-8&q=" + encodeURIComponent(greeting) + "." + encodeURIComponent(value) + ".&tl=de-DE";
+
+								var confirmation = new Media(url, function() {
+
+									confirmation.release();
+
+									// go back to map
+									$scope.$apply(function() {
+										$location.path("map");
+									});
+
+								}, function(err) {
+									console.error(err);
+
+									// go back to map
+									$scope.$apply(function() {
+										$location.path("map");
+									});
+								});
+
+								confirmation.play();
+							}
+						},
+						function(error) {
+
+							ApiAIPlugin.cancelAllRequests();
+							console.log(error);
+
+							// place your error processing here
+							var sorry = ["Tut mir Leid", "Oh nein", "Entschuldige", "Mein Fehler", "Ups"];
+							var greeting = sorry[Math.floor(Math.random() * sorry.length)];
+							var siri_off = new Media("http://translate.google.com/translate_tts?tl=de&q=" + encodeURIComponent(greeting) + ".%20Das%20habe%20ich%20nicht%20verstanden.", function() {
+								siri_off.release();
+
+								// go back to map
+								$scope.$apply(function() {
+									$location.path("map");
+								});
+
+							}, function(err) {
+								console.error(err);
+
+								// go back to map
+								$scope.$apply(function() {
+									$location.path("map");
+								});
 							});
-					},
-					function(err) {
-						console.error(err);
 
-						// go back to map
-						$scope.$apply(function() {
-							$location.path("map");
+							siri_off.play();
 						});
-					});
 
-				siri_on.play();
+				}, 500);
 			},
 
 			function(err) {
@@ -429,7 +417,7 @@ app.controller("HoursVoiceCtrl", function($scope, $location) {
 					$location.path("map");
 				});
 
-				console.log("playAudio():Audio Error: " + err);
+				console.log("playAudio(): Audio Error: " + err);
 			}
 		);
 
@@ -438,7 +426,7 @@ app.controller("HoursVoiceCtrl", function($scope, $location) {
 
 	}, false);
 
-	// DESTROY event for controller
+	//DESTROY event for controller
 	$scope.$on("$destroy", function() {
 		ApiAIPlugin.cancelAllRequests();
 	});
@@ -491,7 +479,7 @@ app.controller("NaviCtrl", function($scope, $location, $cordovaDeviceOrientation
 				window.clearInterval(watchCompass);
 				$cordovaDeviceOrientation.clearWatch(watchCompass);
 				$location.path("parked");
-				$location.refresh();
+				if ($location.refresh) $location.refresh();
 			}
 
 			if (window.demomode) {
@@ -651,8 +639,10 @@ app.controller("HoursTouchCtrl", function($scope, $location) {
 
 	console.log(hourspart, minutespart);
 
+	var min = (minutespart == 0.5) ? 5 : 0;
+
 	$("#out2").val(hourspart);
-	$("#out").val(minutespart);
+	$("#out").val(min);
 
 	$(".apple-watch").swipe({
 		swipeRight: function(event, direction, distance, duration, fingerCount) {
@@ -660,7 +650,6 @@ app.controller("HoursTouchCtrl", function($scope, $location) {
 			window.hours = parseFloat($("#out2").val() + "." + $("#out").val());
 
 			navigator.notification.alert("Alles klar, " + window.hours + " Stunden", function() {
-
 
 				$scope.$apply(function() {
 					$location.path("map");

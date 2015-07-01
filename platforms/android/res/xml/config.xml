@@ -16,6 +16,12 @@
     <feature name="Media">
         <param name="android-package" value="org.apache.cordova.media.AudioHandler" />
     </feature>
+    <feature name="Compass">
+        <param name="android-package" value="org.apache.cordova.deviceorientation.CompassListener" />
+    </feature>
+    <feature name="Notification">
+        <param name="android-package" value="org.apache.cordova.dialogs.Notification" />
+    </feature>
     <name>ParkEasy</name>
     <description>
         Hello World sample application that responds to the deviceready event.
@@ -81,11 +87,16 @@
     <icon gap:platform="ios" height="144" src="www/res/icon/ios/Icon-72@2x.png" width="144" />
     <icon gap:platform="ios" height="76" src="www/res/icon/ios/Icon-76.png" width="76" />
     <icon gap:platform="ios" height="152" src="www/res/icon/ios/Icon-76@2x.png" width="152" />
+    <gap:splash density="port-ldpi" src="www/res/splash/android/res-long-port-ldpi/default.png" />
+    <gap:splash density="port-mdpi" src="www/res/splash/android/res-long-port-mdpi/default.png" />
+    <gap:splash density="port-hdpi" src="www/res/splash/android/res-long-port-hdpi/default.png" />
+    <gap:splash density="port-xhdpi" src="www/res/splash/android/res-long-port-xhdpi/default.png" />
+    <gap:splash density="port-xxhdpi" src="www/res/splash/android/res-long-port-xxhdpi/default.png" />
+    <gap:splash density="port-xxxhdpi" src="www/res/splash/android/res-long-port-xxxhdpi/default.png" />
+    <gap:splash gap:platform="ios" height="480" src="www/res/splash/ios/Default.png" width="320" />
+    <gap:splash gap:platform="ios" height="960" src="www/res/splash/ios/Default@2x.png" width="640" />
+    <gap:splash gap:platform="ios" height="1136" src="www/res/splash/ios/Default-568h@2x.png" width="640" />
+    <gap:splash gap:platform="ios" height="1334" src="www/res/splash/ios/Default-667h@2x.png" width="750" />
+    <gap:splash gap:platform="ios" height="2208" src="www/res/splash/ios/Default-667h@2x.png" width="1242" />
     <access origin="*" />
-    <feature name="Compass">
-        <param name="android-package" value="org.apache.cordova.deviceorientation.CompassListener" />
-    </feature>
-    <feature name="Notification">
-        <param name="android-package" value="org.apache.cordova.dialogs.Notification" />
-    </feature>
 </widget>

@@ -6,26 +6,59 @@
         <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height" />
 
-        <link href="https://api.tiles.mapbox.com/mapbox.js/v2.2.0/mapbox.css" rel="stylesheet" />
+        <link rel="stylesheet" href="https://api.tiles.mapbox.com/mapbox.js/v2.2.0/mapbox.css" />
+        <link rel="stylesheet" href="https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-label/v0.2.1/leaflet.label.css" />
+
         <link rel="stylesheet" type="text/css" href="css/applewatch.css" />
         <link rel="stylesheet" type="text/css" href="css/index.css" />
         <title>ParkEasy</title>
     </head>
     <body ng-controller="AppCtrl">
+
         <div class="apple-watch">
             <div class="apple-watch-screen">
                 <div ng-view></div>
             </div>
         </div>
+
+        <button id="demo" data-state="off">Demo-Modus einschalten</button>
         
         <script src="cordova.js"></script>
         <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.1/angular.min.js"></script>
         <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.1/angular-route.min.js"></script>
-        <script src="js/ng-cordova.min.js"></script>
         <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
         <script src="http://api.tiles.mapbox.com/mapbox.js/v2.2.0/mapbox.js"></script>
+        <script src="http://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-label/v0.2.1/leaflet.label.js"></script>
         <script src="http://ftlabs.github.io/fastclick/lib/fastclick.js"></script>
+        <script src="http://api.tiles.mapbox.com/mapbox.js/plugins/turf/v2.0.0/turf.min.js"></script>
+        <script src="js/jquery.touchSwipe.min.js"></script>
+        <script src="js/ng-cordova.min.js"></script>
         <script src="js/jquery.longpress.js"></script>
+        <script src="js/pubsub.js"></script>
         <script src="js/index.js"></script>
+        <script>
+            function inc(out){
+                field = document.getElementById(out);
+                if(field.value<=11){
+                field.value++;} else field.value==12;
+            }
+            function dec(out){
+                if(field.value<1)
+                {return field.value==0;}
+                else{
+                field = document.getElementById(out);
+                field.value--;
+                }
+            }
+
+            function inc1(out){
+                field = document.getElementById(out);
+                field.value=5;
+            }
+            function dec1(out){
+                field = document.getElementById(out);
+                field.value=0;
+            }
+        </script>
     </body>
 </html>
