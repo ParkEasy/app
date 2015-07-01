@@ -79,7 +79,7 @@ app.controller("AppCtrl", function($scope, $location, $cordovaGeolocation) {
 				$cordovaGeolocation
 					.getCurrentPosition({
 						timeout: 30000,
-						enableHighAccuracy: true
+						enableHighAccuracy: false
 					})
 					.then(publishGPS);
 			} else {
@@ -433,7 +433,7 @@ app.controller("HoursVoiceCtrl", function($scope, $location) {
 });
 
 // NAVI CONTROLLER
-app.controller("NaviCtrl", function($scope, $location, $cordovaDeviceOrientation) {
+app.controller("NaviCtrl", function($scope, $location) {
 
 	var gps, watchCompass;
 
@@ -442,7 +442,9 @@ app.controller("NaviCtrl", function($scope, $location, $cordovaDeviceOrientation
 
 		// find out streetname
 		$.getJSON("http://router.project-osrm.org/nearest?loc=" + parking.Coordinates[1] + "," + parking.Coordinates[0], function(location) {
-			$scope.street = location.name || parking.Name;
+			$scope.$apply(function() {
+				$scope.target = parking.Name || location.name;
+			});
 		});
 
 		// GPS success callback
@@ -468,103 +470,106 @@ app.controller("NaviCtrl", function($scope, $location, $cordovaDeviceOrientation
 			var distsquare = deltaX * deltaX + deltaY * deltaY;
 			var dist = Math.sqrt(distsquare) * 63781.37;
 
-			$scope.$apply(function() {
-				$scope.distance = "(" + parseInt(dist) + "m)";
-			});
-
 			// parked
 			if (parseInt(dist) <= 7 && position.coords.speed <= 1) {
 				window.detail = parking.Id;
 				PubSub.unsubscribe(gps);
 				window.clearInterval(watchCompass);
-				$cordovaDeviceOrientation.clearWatch(watchCompass);
 				$location.path("parked");
-				$location.refresh();
+				if ($location.refresh) $location.refresh();
 			}
 
-			if (window.demomode) {
+			// call osrm viaroute
+			$.getJSON("http://router.project-osrm.org/viaroute?alt=false&instructions=true&loc=" + position.coords.latitude + "," + position.coords.longitude + "&loc=" + parking.Coordinates[1] + "," + parking.Coordinates[0], function(data) {
 
-				var point1 = {
-					"type": "Feature",
-					"properties": {},
-					"geometry": {
-						"type": "Point",
-						"coordinates": [position.coords.longitude, position.coords.latitude]
+				var current = data.route_instructions[0]
+				var next = data.route_instructions[1];
+
+				$scope.$apply(function() {
+					$scope.meters = current[5];
+					$scope.street = next[1];
+
+					// turn instructions
+					/*
+					enum class TurnInstruction : unsigned char
+					{
+					    NoTurn = 0,
+					    GoStraight,
+					    TurnSlightRight,
+					    TurnRight,
+					    TurnSharpRight,
+					    UTurn,
+					    TurnSharpLeft,
+					    TurnLeft,
+					    TurnSlightLeft,
+					    ReachViaLocation,
+					    HeadOn,
+					    EnterRoundAbout,
+					    LeaveRoundAbout,
+					    StayOnRoundAbout,
+					    StartAtEndOfStreet,
+					    ReachedYourDestination,
+					    EnterAgainstAllowedDirection,
+					    LeaveAgainstAllowedDirection,
+					    InverseAccessRestrictionFlag = 127,
+					    AccessRestrictionFlag = 128,
+					    AccessRestrictionPenalty = 129
+					};
+
+
+					*/
+
+					switch (parseInt(next[0])) {
+						case 0:
+							$scope.instruction = "geradeaus";
+							$("#arrow").css("background", "url('img/signs.jpg') 5px 8px");
+							break;
+						case 1:
+							$scope.instruction = "geradeaus";
+							$("#arrow").css("background", "url('img/signs.jpg') -5px -5px");
+							break;
+						case 2:
+							$scope.instruction = "halb rechts";
+							$("#arrow").css("background", "url('img/signs.jpg') -150px -80px");
+							break;
+						case 3:
+							$scope.instruction = "rechts";
+							$("#arrow").css("background", "url('img/signs.jpg') -150px -5px");
+							break;
+						case 4:
+							$scope.instruction = "scharf rechts";
+							$("#arrow").css("background", "url('img/signs.jpg') -225px -5px");
+							break;
+						case 5:
+							$scope.instruction = "umdrehen";
+							$("#arrow").css("background", "url('img/signs.jpg') -5px -80px");
+							break;
+						case 6:
+							$scope.instruction = "halb links";
+							$("#arrow").css("background", "url('img/signs.jpg') -80px -80px");
+							break;
+						case 7:
+							$scope.instruction = "links";
+							$("#arrow").css("background", "url('img/signs.jpg') -80px -5px");
+							break;
+						case 8:
+							$scope.instruction = "scharf links";
+							$("#arrow").css("background", "url('img/signs.jpg') -225px -80px");
+							break;
+						case 9:
+							$scope.instruction = "bis";
+							$("#arrow").css("background", "url('img/signs.jpg') -5px -5px");
+							break;
+						case 10:
+							$scope.instruction = "weiter";
+							$("#arrow").css("background", "url('img/signs.jpg') -5px -5px");
+							break;
 					}
-				};
-
-				var point2 = {
-					"type": "Feature",
-					"properties": {},
-					"geometry": {
-						"type": "Point",
-						"coordinates": [parking.Coordinates[0], parking.Coordinates[1]]
-					}
-				};
-
-				var winkel = turf.bearing(point1, point2) % 360;
-				var bearing = (winkel - position.coords.heading) % 360;
-
-				console.log(position.coords.heading, winkel, bearing);
-
-				var arr = document.getElementById("arrow");
-				if (arr) {
-
-					arr.style.transform = "rotate(" + bearing + "deg)";
-					arr.style.webkitTransform = "rotate(" + bearing + "deg)";
-				}
-			}
+				});
+			});
 		};
 
 		PubSub.subscribe("gps", gps);
-
-		document.addEventListener("deviceready", function() {
-
-			// watch device orientation
-			watchCompass = $cordovaDeviceOrientation.watchHeading({
-				frequency: 2500,
-				filter: true
-			}).then(
-				null,
-				function(error) {},
-				function(result) {
-
-					var heading = result.magneticHeading || result.trueHeading;
-
-					if (window.position && !window.demomode) {
-
-						var point1 = {
-							"type": "Feature",
-							"properties": {},
-							"geometry": {
-								"type": "Point",
-								"coordinates": [window.position.coords.longitude, window.position.coords.latitude]
-							}
-						};
-
-						var point2 = {
-							"type": "Feature",
-							"properties": {},
-							"geometry": {
-								"type": "Point",
-								"coordinates": [parking.Coordinates[0], parking.Coordinates[1]]
-							}
-						};
-
-						var winkel = turf.bearing(point1, point2) % 360;
-						var bearing = (winkel - heading) % 360;
-
-						console.log(heading, winkel, bearing);
-
-						var arr = document.getElementById("arrow");
-						if (arr) {
-
-							arr.style.transform = "rotate(" + bearing + "deg)";
-							arr.style.webkitTransform = "rotate(" + bearing + "deg)";
-						}
-					}
-				});
-		});
 	});
 
 	$(".apple-watch").swipe({
@@ -573,7 +578,6 @@ app.controller("NaviCtrl", function($scope, $location, $cordovaDeviceOrientation
 			// this only fires when the user swipes left+
 			PubSub.unsubscribe(gps);
 			window.clearInterval(watchCompass);
-			$cordovaDeviceOrientation.clearWatch(watchCompass);
 
 			$location.path("map");
 			$location.replace();
@@ -583,7 +587,6 @@ app.controller("NaviCtrl", function($scope, $location, $cordovaDeviceOrientation
 	// DESTROY event for controller
 	$scope.$on("$destroy", function() {
 		PubSub.unsubscribe(gps);
-		$cordovaDeviceOrientation.clearWatch(watchCompass);
 	});
 });
 
