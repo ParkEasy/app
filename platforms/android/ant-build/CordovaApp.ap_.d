@@ -41,6 +41,7 @@
 /Volumes/Macintosh/Users/thomasbruggemann/sites/parkeasy/app/platforms/android/assets/www/img/edge-arrow-marker.png \
 /Volumes/Macintosh/Users/thomasbruggemann/sites/parkeasy/app/platforms/android/assets/www/img/logo.png \
 /Volumes/Macintosh/Users/thomasbruggemann/sites/parkeasy/app/platforms/android/assets/www/img/signs.jpg \
+/Volumes/Macintosh/Users/thomasbruggemann/sites/parkeasy/app/platforms/android/assets/www/img/touch.png \
 /Volumes/Macintosh/Users/thomasbruggemann/sites/parkeasy/app/platforms/android/assets/www/js/index.js \
 /Volumes/Macintosh/Users/thomasbruggemann/sites/parkeasy/app/platforms/android/assets/www/js/jquery.longpress.js \
 /Volumes/Macintosh/Users/thomasbruggemann/sites/parkeasy/app/platforms/android/assets/www/js/jquery.touchSwipe.min.js \
