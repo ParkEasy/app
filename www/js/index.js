@@ -65,7 +65,6 @@ app.controller("AppCtrl", function($scope, $location, $cordovaGeolocation) {
 
 		// publish GPS
 		var publishGPS = function(position) {
-			console.log(position);
 			window.speed = position.coords.speed;
 			PubSub.publish("gps", position);
 		};
@@ -151,6 +150,15 @@ app.controller("MapCtrl", function($scope, $location) {
 	$(".leaflet-control-attribution").hide();
 	$(".mapbox-logo").hide();
 
+	if (!window.tutorialShow) {
+		$("#tutorial").show();
+		$("#tutorial").on("click", function() {
+			$("#tutorial").hide();
+			$("#tutorial").remove();
+			window.tutorialShow = true;
+		});
+	}
+
 	// add the function to the list of subscribers for a particular topic
 	// we're keeping the returned token, in order to be able to unsubscribe
 	// from the topic later on
@@ -171,7 +179,7 @@ app.controller("MapCtrl", function($scope, $location) {
 
 				$scope.$apply(function() {
 					$location.path("parked");
-					if ($location.refresh) $location.refresh();
+					$location.replace();
 				});
 			} else {
 				var ids = [];
@@ -435,7 +443,7 @@ app.controller("HoursVoiceCtrl", function($scope, $location) {
 // NAVI CONTROLLER
 app.controller("NaviCtrl", function($scope, $location) {
 
-	var gps, watchCompass;
+	var gps;
 
 	// get detail info by id
 	$.getJSON("http://parkapi.azurewebsites.net/detail?id=" + window.detail, function(parking) {
@@ -474,9 +482,8 @@ app.controller("NaviCtrl", function($scope, $location) {
 			if (parseInt(dist) <= 7 && position.coords.speed <= 1) {
 				window.detail = parking.Id;
 				PubSub.unsubscribe(gps);
-				window.clearInterval(watchCompass);
 				$location.path("parked");
-				if ($location.refresh) $location.refresh();
+				$location.replace();
 			}
 
 			// call osrm viaroute
@@ -487,12 +494,10 @@ app.controller("NaviCtrl", function($scope, $location) {
 
 				$scope.$apply(function() {
 					$scope.meters = current[5];
-					$scope.street = next[1];
+					$scope.street = next[1].length > 0 ? next[1] : null;
 
 					// turn instructions
 					/*
-					enum class TurnInstruction : unsigned char
-					{
 					    NoTurn = 0,
 					    GoStraight,
 					    TurnSlightRight,
@@ -503,22 +508,20 @@ app.controller("NaviCtrl", function($scope, $location) {
 					    TurnLeft,
 					    TurnSlightLeft,
 					    ReachViaLocation,
-					    HeadOn,
+					    HeadOn = 10,
 					    EnterRoundAbout,
 					    LeaveRoundAbout,
 					    StayOnRoundAbout,
 					    StartAtEndOfStreet,
-					    ReachedYourDestination,
+					    ReachedYourDestination = 15,
 					    EnterAgainstAllowedDirection,
 					    LeaveAgainstAllowedDirection,
 					    InverseAccessRestrictionFlag = 127,
 					    AccessRestrictionFlag = 128,
 					    AccessRestrictionPenalty = 129
-					};
-
-
 					*/
 
+					console.log(parseInt(next[0]));
 					switch (parseInt(next[0])) {
 						case 0:
 							$scope.instruction = "geradeaus";
@@ -560,7 +563,12 @@ app.controller("NaviCtrl", function($scope, $location) {
 							$scope.instruction = "bis";
 							$("#arrow").css("background", "url('img/signs.jpg') -5px -5px");
 							break;
+						case 15:
+							$scope.instruction = "hast du das Ziel erreicht";
+							$("#arrow").css("background", "url('img/signs.jpg') -5px -5px");
+							break;
 						case 10:
+						default:
 							$scope.instruction = "weiter";
 							$("#arrow").css("background", "url('img/signs.jpg') -5px -5px");
 							break;
@@ -575,9 +583,16 @@ app.controller("NaviCtrl", function($scope, $location) {
 	$(".apple-watch").swipe({
 		swipeRight: function(event, direction, distance, duration, fingerCount) {
 
+			console.log("swipe");
+
 			// this only fires when the user swipes left+
 			PubSub.unsubscribe(gps);
-			window.clearInterval(watchCompass);
+
+			$scope.$apply(function() {
+
+				$location.path("map");
+				$location.replace();
+			});
 
 			$location.path("map");
 			$location.replace();
@@ -592,17 +607,6 @@ app.controller("NaviCtrl", function($scope, $location) {
 
 // PARKED CONTROLLER
 app.controller("ParkedCtrl", function($scope, $location) {
-
-	$(".apple-watch").swipe({
-		swipeRight: function(event, direction, distance, duration, fingerCount) {
-			console.log("swipe");
-			//This only fires when the user swipes left
-			$scope.$apply(function() {
-				$location.path("map");
-				$location.replace();
-			});
-		}
-	});
 
 	$.getJSON("http://parkapi.azurewebsites.net/detail?id=" + window.detail, function(parking) {
 		console.log(parking);
@@ -628,6 +632,22 @@ app.controller("ParkedCtrl", function($scope, $location) {
 					}, "Danke!", "OK")
 				}
 			});
+		}
+	});
+
+	$(".apple-watch").swipe({
+		swipeRight: function(event, direction, distance, duration, fingerCount) {
+			console.log("swipe");
+
+			//This only fires when the user swipes left
+			$scope.$apply(function() {
+				$location.path("map");
+				$location.replace();
+			});
+
+
+			$location.path("map");
+			$location.replace();
 		}
 	});
 });
