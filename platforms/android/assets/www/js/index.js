@@ -65,6 +65,7 @@ app.controller("AppCtrl", function($scope, $location, $cordovaGeolocation) {
 
 		// publish GPS
 		var publishGPS = function(position) {
+			console.log(position);
 			window.speed = position.coords.speed;
 			PubSub.publish("gps", position);
 		};
@@ -78,8 +79,7 @@ app.controller("AppCtrl", function($scope, $location, $cordovaGeolocation) {
 
 				$cordovaGeolocation
 					.getCurrentPosition({
-						timeout: 30000,
-						enableHighAccuracy: false
+						enableHighAccuracy: true
 					})
 					.then(publishGPS);
 			} else {
